@@ -252,3 +252,4 @@ const styles = StyleSheet.create({
     fontSize: 10.5,
   },
 });
+

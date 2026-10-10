@@ -70,3 +70,4 @@ export const removeUserSession = () => removeItem('@lazyeye_user_session');
 
 export const storeTheme = (themeKey) => setItem('@lazyeye_theme', themeKey);
 export const getStoredTheme = () => getItem('@lazyeye_theme');
+

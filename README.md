@@ -114,3 +114,4 @@ You can also run or import this project into Expo by running:
 npx expo start
 ```
 and scanning the QR code with the **Expo Go** mobile app on your Android or iPhone device!
+

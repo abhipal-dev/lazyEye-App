@@ -1,26 +1,4 @@
 {
-  "name": "lazyeye-mobile",
-  "displayName": "LazyEye Therapy",
-  "expo": {
-    "name": "LazyEye Therapy",
-    "slug": "lazyeye-mobile",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "automatic",
-    "splash": {
-      "resizeMode": "contain",
-      "backgroundColor": "#080D1A"
-    },
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "org.lazyeye.therapy"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#080D1A"
-      },
-      "package": "org.lazyeye.therapy"
-    }
-  }
+  "name": "LazyEyeMobile",
+  "displayName": "LazyEye Therapy"
 }

@@ -3,15 +3,26 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
-# Build outputs
+# Android builds
+android/.gradle/
+android/.kotlin/
+android/build/
 android/app/build/
-ios/build/
-.expo/
-dist/
-web-build/
+android/app/.cxx/
+android/app/build/
+*.apk
+*.aab
 
-# IDE files
+# iOS builds
+ios/Pods/
+ios/build/
+ios/*.xcworkspace
+ios/*.xcodeproj/xcuserdata/
+.xcode.env.local
+
+# IDE & OS files
 .vscode/
 .idea/
 *.swp
 .DS_Store
+Thumbs.db
