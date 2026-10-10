@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, StatusBar } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -73,7 +73,7 @@ export default function HeaderBar({ title, subtitle, onThemePress, onProfilePres
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 14,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 28) + 12 : 14,
     paddingBottom: 14,
     paddingHorizontal: 16,
     flexDirection: 'row',

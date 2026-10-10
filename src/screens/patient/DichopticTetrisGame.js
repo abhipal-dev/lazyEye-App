@@ -5,6 +5,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -339,7 +341,7 @@ export default function DichopticTetrisGame({ onClose }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 18,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 28) + 12 : 18,
     paddingHorizontal: 12,
   },
   topBar: {

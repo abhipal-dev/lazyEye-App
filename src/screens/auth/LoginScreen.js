@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  StatusBar,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -191,7 +192,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    paddingTop: 45,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 28) + 16 : 45,
     paddingBottom: 50,
   },
   topBar: {

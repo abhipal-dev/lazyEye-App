@@ -6,6 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -128,7 +130,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   topBar: {
-    paddingTop: 16,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 28) + 12 : 16,
     paddingBottom: 14,
     paddingHorizontal: 16,
     flexDirection: 'row',
