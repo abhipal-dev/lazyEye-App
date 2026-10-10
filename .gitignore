@@ -1,0 +1,17 @@
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build outputs
+android/app/build/
+ios/build/
+.expo/
+dist/
+web-build/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+.DS_Store
