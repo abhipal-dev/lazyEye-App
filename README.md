@@ -49,69 +49,93 @@ In dichoptic amblyopia treatment, high-contrast chromatic elements are separated
 
 ---
 
-## 📂 Project Architecture
+## 📂 Project Architecture (Bare React Native CLI)
 
 ```
 lazyEye_Mobile/
-├── App.js                         # Root App with ThemeProvider & AuthProvider
-├── index.js                       # AppRegistry entry point
-├── app.json                       # Mobile bundle configuration
-├── package.json                   # Dependencies & scripts
+├── App.js                               # Root App with ThemeProvider & AuthProvider
+├── index.js                             # AppRegistry entry point
+├── app.json                             # Application metadata ("LazyEyeMobile")
+├── package.json                         # CLI dependencies & scripts
+├── metro.config.js                      # Metro bundler config
+├── babel.config.js                      # Babel preset for React Native
+├── android/                             # Native Android Studio Project
+│   ├── build.gradle                     # Top-level Gradle config
+│   ├── settings.gradle                  # Gradle project settings
+│   ├── gradlew & gradlew.bat            # Gradle wrapper executables
+│   └── app/
+│       ├── build.gradle                 # Application Gradle (namespace "org.lazyeye.therapy")
+│       └── src/main/
+│           ├── AndroidManifest.xml      # App permissions & launch activity
+│           ├── java/org/lazyeye/therapy/
+│           │   ├── MainActivity.kt      # Main React Activity
+│           │   └── MainApplication.kt   # React Native Application entry
+│           └── res/                     # Launch drawables, styles, strings
+├── ios/                                 # Native Apple Xcode Project
+│   ├── Podfile                          # CocoaPods dependencies
+│   ├── .xcode.env                       # Xcode build environment
+│   └── LazyEyeMobile/                   # Native iOS app bundle & AppDelegate
 └── src/
     ├── context/
-    │   ├── AuthContext.js         # Multi-role authentication & session state
-    │   └── ThemeContext.js        # Dynamic 4-theme palette manager
+    │   ├── AuthContext.js               # Multi-role authentication & session state
+    │   └── ThemeContext.js              # Dynamic 4-theme palette manager
     ├── theme/
-    │   └── themes.js              # Theme token definitions
+    │   └── themes.js                    # 4 Clinical theme token definitions
     ├── services/
-    │   ├── api.js                 # Live Render API client & mock database
-    │   └── storage.js             # Session & theme persistence adapter
+    │   ├── api.js                       # Live Render API client & mock database
+    │   └── storage.js                   # Cross-platform session persistence
     ├── navigation/
-    │   └── RootNavigator.js       # Role-scoped screen routing & modal stacks
+    │   └── RootNavigator.js             # Role-scoped screen routing & modal stacks
     ├── components/
-    │   ├── HeaderBar.js           # Top navigation with role badge & quick tools
-    │   ├── MetricCard.js          # Polished KPI metric cards
-    │   ├── HeatmapGrid.js         # 84-day interactive mobile therapy calendar
-    │   └── Button.js              # Reusable themed button variants
+    │   ├── HeaderBar.js                 # Top navigation with role badge & quick tools
+    │   ├── MetricCard.js                # Polished KPI metric cards
+    │   ├── HeatmapGrid.js               # 84-day interactive mobile therapy calendar
+    │   └── Button.js                    # Reusable themed button variants
     └── screens/
         ├── auth/
-        │   └── LoginScreen.js     # Login with 1-tap quick role switcher
+        │   └── LoginScreen.js           # Login with 1-tap quick role switcher
         ├── doctor/
-        │   ├── DoctorDashboardScreen.js  # Scoped patient cohort dashboard
-        │   ├── PatientDetailScreen.js    # Lens color & contrast calibration
-        │   ├── HeatmapModalScreen.js     # 84-day activity drill-down modal
-        │   └── NewConsultationScreen.js  # Record clinical doctor evaluation
+        │   ├── DoctorDashboardScreen.js # Scoped patient cohort dashboard
+        │   ├── PatientDetailScreen.js   # Lens color & contrast calibration
+        │   ├── HeatmapModalScreen.js    # 84-day activity drill-down modal
+        │   └── NewConsultationScreen.js # Record clinical doctor evaluation
         ├── admin/
-        │   ├── AdminDashboardScreen.js   # Clinic management & doctor roster
+        │   ├── AdminDashboardScreen.js  # Clinic management & doctor roster
         │   └── RegistrationApprovalsScreen.js # Approve self-registered applicants
         ├── root/
-        │   └── RootSuperadminScreen.js   # Master superadmin control & admin provisioning
+        │   └── RootSuperadminScreen.js  # Master superadmin control & admin provisioning
         ├── patient/
-        │   ├── PatientHomeScreen.js      # Daily regimen progress & game launcher
-        │   ├── DichopticTetrisGame.js    # Playable Dichoptic Tetris
-        │   ├── DichopticSnakeGame.js     # Playable Dichoptic Snake
-        │   ├── CalibrationScreen.js      # Patient lens contrast sliders
-        │   └── TherapyHistoryScreen.js   # History logs & doctor remarks
+        │   ├── PatientHomeScreen.js     # Daily regimen progress & game launcher
+        │   ├── DichopticTetrisGame.js   # Playable Dichoptic Tetris
+        │   ├── DichopticSnakeGame.js    # Playable Dichoptic Snake
+        │   ├── CalibrationScreen.js     # Patient lens contrast sliders
+        │   └── TherapyHistoryScreen.js  # History logs & doctor remarks
         └── shared/
-            ├── ProfileScreen.js          # User info & theme selection
-            └── SettingsThemeModal.js     # Instant theme picker modal
+            ├── ProfileScreen.js         # User info & theme selection
+            └── SettingsThemeModal.js    # Instant theme picker modal
 ```
 
 ---
 
-## 🏃 Running the Application
+## 🏃 Running the Application (React Native CLI)
 
-### Option A: Bare React Native
+### 1. Install Dependencies
 ```bash
 cd d:\Abhishek_Projects\lazyEye_Mobile
-npm install
-npm run android   # or npm run ios
+npm.cmd install
 ```
 
-### Option B: Expo / Expo Go
-You can also run or import this project into Expo by running:
+### 2. Start Metro Bundler
 ```bash
-npx expo start
+npm.cmd start
 ```
-and scanning the QR code with the **Expo Go** mobile app on your Android or iPhone device!
+
+### 3. Run on Android Device / Emulator
+```bash
+npm.cmd run android
+```
+
+### 4. Open in Android Studio
+You can also open the `d:\Abhishek_Projects\lazyEye_Mobile\android` folder directly in Android Studio to build debug or signed release APKs (`./gradlew assembleRelease`).
+
 
