@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
+import CustomIcon from './CustomIcon';
 
 export default function HeatmapGrid({ heatmapData = {}, onSelectDate, selectedDate }) {
   const { theme } = useTheme();
@@ -28,8 +29,8 @@ export default function HeatmapGrid({ heatmapData = {}, onSelectDate, selectedDa
 
   const getCellColor = (count) => {
     if (count === 0) return theme.colors.surfaceHighlight;
-    if (count === 1) return '#00E5FF44';
-    if (count === 2) return '#00E5FF88';
+    if (count === 1) return `${theme.colors.primary}44`;
+    if (count === 2) return `${theme.colors.primary}88`;
     if (count >= 3) return theme.colors.primary;
     return theme.colors.surfaceHighlight;
   };
@@ -37,12 +38,18 @@ export default function HeatmapGrid({ heatmapData = {}, onSelectDate, selectedDa
   const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+    <View style={[styles.container, { backgroundColor: theme.colors.surface, borderColor: theme.colors.cardBorder || theme.colors.border }]}>
       <View style={styles.headerRow}>
         <View style={styles.titleRow}>
-          <Text style={styles.calendarIcon}>📅</Text>
+          <CustomIcon
+            library="Feather"
+            name="calendar"
+            size={16}
+            color={theme.colors.primary}
+            style={{ marginRight: 8 }}
+          />
           <Text style={[styles.title, { color: theme.colors.text }]}>
-            84-Day Therapy Intensity Heatmap
+            Therapy Adherence Heatmap
           </Text>
         </View>
         <Text style={[styles.subText, { color: theme.colors.textSecondary }]}>

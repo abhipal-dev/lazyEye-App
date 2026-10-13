@@ -1,63 +1,29 @@
-// Lightweight, Cross-Platform Storage Adapter
-// Automatically uses AsyncStorage if installed, otherwise in-memory persistent store
-
-let memoryStore = {};
-
-let AsyncStorageModule = null;
-try {
-  AsyncStorageModule = require('@react-native-async-storage/async-storage').default;
-} catch (e) {
-  // Fall back to memoryStore
-}
+// Enhanced Storage Adapter backed by MMKVStorage
+import MMKVStorage from './mmkvStorage';
 
 export const setItem = async (key, value) => {
-  try {
-    const stringVal = typeof value === 'string' ? value : JSON.stringify(value);
-    memoryStore[key] = stringVal;
-    if (AsyncStorageModule) {
-      await AsyncStorageModule.setItem(key, stringVal);
-    }
-  } catch (error) {
-    memoryStore[key] = typeof value === 'string' ? value : JSON.stringify(value);
-  }
+  MMKVStorage.set(key, value);
 };
 
 export const getItem = async (key) => {
-  try {
-    if (AsyncStorageModule) {
-      const val = await AsyncStorageModule.getItem(key);
-      if (val !== null) return val;
-    }
-    return memoryStore[key] || null;
-  } catch (error) {
-    return memoryStore[key] || null;
-  }
+  return MMKVStorage.getString(key, null);
 };
 
 export const removeItem = async (key) => {
-  try {
-    delete memoryStore[key];
-    if (AsyncStorageModule) {
-      await AsyncStorageModule.removeItem(key);
-    }
-  } catch (error) {
-    delete memoryStore[key];
-  }
+  MMKVStorage.delete(key);
 };
 
 export const clear = async () => {
-  memoryStore = {};
-  if (AsyncStorageModule) {
-    try {
-      await AsyncStorageModule.clear();
-    } catch (e) {}
-  }
+  MMKVStorage.clearAll();
 };
 
 // Convenience helpers
-export const storeUserSession = (user) => setItem('@lazyeye_user_session', user);
+export const storeUserSession = (user) => {
+  MMKVStorage.set('@lazyeye_user_session', user);
+};
+
 export const getStoredUserSession = async () => {
-  const val = await getItem('@lazyeye_user_session');
+  const val = MMKVStorage.getString('@lazyeye_user_session');
   if (!val) return null;
   try {
     return JSON.parse(val);
@@ -66,8 +32,36 @@ export const getStoredUserSession = async () => {
   }
 };
 
-export const removeUserSession = () => removeItem('@lazyeye_user_session');
+export const removeUserSession = () => {
+  MMKVStorage.delete('@lazyeye_user_session');
+};
 
-export const storeTheme = (themeKey) => setItem('@lazyeye_theme', themeKey);
-export const getStoredTheme = () => getItem('@lazyeye_theme');
+export const storeTheme = (themeKey) => {
+  MMKVStorage.set('@lazyeye_pref_theme', themeKey);
+};
 
+export const getStoredTheme = () => {
+  return MMKVStorage.getString('@lazyeye_pref_theme', 'modern');
+};
+
+export const storeGameEngineMode = (useWeb) => {
+  MMKVStorage.set('@lazyeye_pref_use_web_games', Boolean(useWeb));
+};
+
+export const getStoredGameEngineMode = async () => {
+  return MMKVStorage.getBoolean('@lazyeye_pref_use_web_games', false);
+};
+
+export default {
+  setItem,
+  getItem,
+  removeItem,
+  clear,
+  storeUserSession,
+  getStoredUserSession,
+  removeUserSession,
+  storeTheme,
+  getStoredTheme,
+  storeGameEngineMode,
+  getStoredGameEngineMode,
+};

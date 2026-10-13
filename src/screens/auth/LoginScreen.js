@@ -13,6 +13,8 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import Button from '../../components/Button';
+import BrandLogo from '../../components/BrandLogo';
+import CustomIcon from '../../components/CustomIcon';
 
 export default function LoginScreen({ onOpenThemeModal }) {
   const { theme } = useTheme();
@@ -26,61 +28,126 @@ export default function LoginScreen({ onOpenThemeModal }) {
     await login(username.trim(), password);
   };
 
+  const getRoleIconConfig = (roleKey) => {
+    switch (roleKey) {
+      case 'doctor':
+        return { library: 'MaterialCommunityIcons', name: 'doctor', color: theme.colors.info };
+      case 'patient':
+      case 'user':
+        return { library: 'Ionicons', name: 'eye-outline', color: theme.colors.primary };
+      case 'admin':
+        return { library: 'MaterialCommunityIcons', name: 'shield-account-outline', color: theme.colors.success };
+      case 'root':
+        return { library: 'Ionicons', name: 'shield-checkmark-outline', color: theme.colors.warning };
+      default:
+        return { library: 'Feather', name: 'user', color: theme.colors.primary };
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
+      <StatusBar
+        barStyle={theme.statusBar || 'light-content'}
+        backgroundColor={theme.colors.background}
+      />
+
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* Top Bar with Theme Toggle */}
+        {/* Top Bar with Clean Theme Switcher */}
         <View style={styles.topBar}>
-          <View style={[styles.cloudBadge, { backgroundColor: theme.colors.badgeBg, borderColor: theme.colors.border }]}>
+          <View
+            style={[
+              styles.statusPill,
+              {
+                backgroundColor: theme.colors.iconContainerBg,
+                borderColor: theme.colors.iconContainerBorder,
+              },
+            ]}
+          >
             <View style={[styles.pulseDot, { backgroundColor: theme.colors.success }]} />
-            <Text style={[styles.cloudText, { color: theme.colors.primary }]}>
-              Render Cloud • Paris MySQL
+            <Text style={[styles.statusText, { color: theme.colors.textSecondary }]}>
+              Clinical Cloud Connected
             </Text>
           </View>
 
           <TouchableOpacity
             onPress={onOpenThemeModal}
-            style={[styles.themeBtn, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+            style={[
+              styles.themeBtn,
+              {
+                backgroundColor: theme.colors.iconContainerBg,
+                borderColor: theme.colors.iconContainerBorder,
+              },
+            ]}
+            accessible={true}
+            accessibilityLabel="Switch theme"
           >
-            <Text style={styles.themeBtnText}>🎨 Theme</Text>
+            <CustomIcon
+              library="Ionicons"
+              name="color-palette-outline"
+              size={18}
+              color={theme.colors.text}
+            />
           </TouchableOpacity>
         </View>
 
-        {/* Brand Banner */}
+        {/* Brand Banner with Website Logo */}
         <View style={styles.brandContainer}>
-          <View style={[styles.brandIconWrap, { backgroundColor: theme.colors.primaryGlow }]}>
-            <Text style={styles.brandIcon}>👁️</Text>
-          </View>
-          <Text style={[styles.brandTitle, { color: theme.colors.text }]}>LazyEye</Text>
-          <Text style={[styles.brandTagline, { color: theme.colors.textSecondary }]}>
-            Digital Dichoptic Vision Therapy Platform
+          <BrandLogo size={76} variant="icon" />
+          <Text style={[styles.brandTitle, { color: theme.colors.text }]}>
+            LazyEye
           </Text>
-          <Text style={[styles.brandSub, { color: theme.colors.textMuted }]}>
-            Amblyopia rehabilitation • Scoped clinical portals • Anaglyph gaming
+          <Text style={[styles.brandTagline, { color: theme.colors.textSecondary }]}>
+            Dichoptic Vision Therapy & Clinical Portals
           </Text>
         </View>
 
-        {/* Custom Login Form */}
-        <View style={[styles.card, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}>
+        {/* Clean Login Form Card */}
+        <View
+          style={[
+            styles.card,
+            {
+              backgroundColor: theme.colors.cardBg,
+              borderColor: theme.colors.cardBorder,
+            },
+          ]}
+        >
           <Text style={[styles.cardHeader, { color: theme.colors.text }]}>
-            Sign In with Account
+            Sign In
           </Text>
 
           {authError && (
-            <View style={[styles.errorBox, { backgroundColor: `${theme.colors.danger}18`, borderColor: theme.colors.danger }]}>
-              <Text style={[styles.errorText, { color: theme.colors.danger }]}>{authError}</Text>
+            <View
+              style={[
+                styles.errorBox,
+                {
+                  backgroundColor: `${theme.colors.danger}14`,
+                  borderColor: theme.colors.danger,
+                },
+              ]}
+            >
+              <CustomIcon
+                library="Feather"
+                name="alert-circle"
+                size={16}
+                color={theme.colors.danger}
+              />
+              <Text style={[styles.errorText, { color: theme.colors.danger }]}>
+                {authError}
+              </Text>
             </View>
           )}
 
           <View style={styles.inputGroup}>
-            <Text style={[styles.inputLabel, { color: theme.colors.textSecondary }]}>Username</Text>
+            <Text style={[styles.inputLabel, { color: theme.colors.textSecondary }]}>
+              Username
+            </Text>
             <TextInput
               value={username}
               onChangeText={setUsername}
@@ -99,7 +166,9 @@ export default function LoginScreen({ onOpenThemeModal }) {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={[styles.inputLabel, { color: theme.colors.textSecondary }]}>Password</Text>
+            <Text style={[styles.inputLabel, { color: theme.colors.textSecondary }]}>
+              Password
+            </Text>
             <TextInput
               value={password}
               onChangeText={setPassword}
@@ -118,69 +187,87 @@ export default function LoginScreen({ onOpenThemeModal }) {
           </View>
 
           <Button
-            title="Authenticate & Enter"
-            icon="🔒"
+            title="Sign In to Portal"
+            iconName="log-in"
+            iconLibrary="Feather"
             onPress={handleCustomLogin}
             loading={loading}
             style={styles.submitBtn}
           />
         </View>
 
-        {/* 1-Tap Quick Role Tester Presets */}
+        {/* One-Tap Quick Role Tester Presets */}
         <View style={styles.quickSection}>
-          <View style={styles.quickHeaderRow}>
-            <Text style={[styles.quickTitle, { color: theme.colors.text }]}>
-              🧪 One-Tap Quick Role Switcher
-            </Text>
-            <Text style={[styles.quickBadge, { color: theme.colors.primary, backgroundColor: theme.colors.badgeBg }]}>
-              Instant Access
-            </Text>
-          </View>
-          <Text style={[styles.quickSubtitle, { color: theme.colors.textSecondary }]}>
-            Tap any role to immediately test distinct dashboards and scoped data:
+          <Text style={[styles.quickSectionTitle, { color: theme.colors.text }]}>
+            Quick Role Switcher
+          </Text>
+          <Text style={[styles.quickSectionSub, { color: theme.colors.textSecondary }]}>
+            Select a verified profile to test scoped permissions:
           </Text>
 
-          <View style={styles.rolesGrid}>
-            {quickRoles.map((roleItem) => (
-              <TouchableOpacity
-                key={roleItem.role}
-                onPress={() => quickLogin(roleItem.role)}
-                activeOpacity={0.7}
-                style={[
-                  styles.roleCard,
-                  {
-                    backgroundColor: theme.colors.surface,
-                    borderColor: theme.colors.border,
-                  },
-                ]}
-              >
-                <View style={styles.roleCardTop}>
-                  <Text style={styles.roleIcon}>{roleItem.icon}</Text>
-                  <View style={styles.roleNameCol}>
-                    <Text style={[styles.roleTitle, { color: theme.colors.text }]}>
-                      {roleItem.title}
-                    </Text>
-                    <Text style={[styles.roleBadge, { color: theme.colors.primary }]}>
-                      {roleItem.badge}
+          <View style={styles.rolesList}>
+            {quickRoles.map((roleItem) => {
+              const iconCfg = getRoleIconConfig(roleItem.role);
+              return (
+                <TouchableOpacity
+                  key={roleItem.role}
+                  onPress={() => quickLogin(roleItem.role)}
+                  activeOpacity={0.75}
+                  style={[
+                    styles.roleCard,
+                    {
+                      backgroundColor: theme.colors.cardBg,
+                      borderColor: theme.colors.cardBorder,
+                    },
+                  ]}
+                >
+                  <View
+                    style={[
+                      styles.roleIconContainer,
+                      {
+                        backgroundColor: theme.colors.iconContainerBg,
+                        borderColor: theme.colors.iconContainerBorder,
+                      },
+                    ]}
+                  >
+                    <CustomIcon
+                      library={iconCfg.library}
+                      name={iconCfg.name}
+                      size={20}
+                      color={iconCfg.color}
+                    />
+                  </View>
+
+                  <View style={styles.roleCardText}>
+                    <View style={styles.roleCardHeader}>
+                      <Text style={[styles.roleCardTitle, { color: theme.colors.text }]}>
+                        {roleItem.title}
+                      </Text>
+                      <Text style={[styles.roleBadge, { color: iconCfg.color }]}>
+                        {roleItem.badge}
+                      </Text>
+                    </View>
+                    <Text
+                      style={[styles.roleCardDesc, { color: theme.colors.textSecondary }]}
+                      numberOfLines={1}
+                    >
+                      {roleItem.scopeDescription}
                     </Text>
                   </View>
-                </View>
 
-                <Text style={[styles.roleDesc, { color: theme.colors.textMuted }]}>
-                  {roleItem.scopeDescription}
-                </Text>
-
-                <View style={[styles.credPill, { backgroundColor: theme.colors.inputBg, borderColor: theme.colors.border }]}>
-                  <Text style={[styles.credText, { color: theme.colors.textSecondary }]}>
-                    User: <Text style={{ color: theme.colors.text, fontWeight: '700' }}>{roleItem.username}</Text>
-                    {'  •  '}
-                    Pass: <Text style={{ color: theme.colors.text, fontWeight: '700' }}>{roleItem.password}</Text>
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))}
+                  <CustomIcon
+                    library="Feather"
+                    name="chevron-right"
+                    size={16}
+                    color={theme.colors.textMuted}
+                  />
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
+
+        <View style={{ height: 24 }} />
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -191,9 +278,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: 20,
-    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 28) + 16 : 45,
-    paddingBottom: 50,
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 28) + 12 : 24,
+    paddingBottom: 40,
   },
   topBar: {
     flexDirection: 'row',
@@ -201,7 +288,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 20,
   },
-  cloudBadge: {
+  statusPill: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
@@ -211,169 +298,130 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   pulseDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
-  cloudText: {
+  statusText: {
     fontSize: 11,
-    fontWeight: '700',
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    fontWeight: '600',
   },
   themeBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 14,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     borderWidth: 1,
-  },
-  themeBtnText: {
-    fontSize: 12,
-    fontWeight: '600',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   brandContainer: {
     alignItems: 'center',
     marginBottom: 24,
   },
-  brandIconWrap: {
-    width: 68,
-    height: 68,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  brandIcon: {
-    fontSize: 34,
-  },
   brandTitle: {
-    fontSize: 28,
-    fontWeight: '900',
+    fontSize: 26,
+    fontWeight: '800',
+    marginTop: 10,
     letterSpacing: -0.5,
   },
   brandTagline: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 13,
+    fontWeight: '500',
     marginTop: 4,
-  },
-  brandSub: {
-    fontSize: 12,
     textAlign: 'center',
-    marginTop: 4,
-    maxWidth: 290,
   },
   card: {
-    borderRadius: 20,
-    padding: 20,
+    borderRadius: 16,
     borderWidth: 1,
+    padding: 20,
     marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 10,
-    elevation: 4,
   },
   cardHeader: {
-    fontSize: 16,
-    fontWeight: '800',
+    fontSize: 18,
+    fontWeight: '700',
     marginBottom: 16,
   },
   errorBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 10,
     borderRadius: 10,
     borderWidth: 1,
     marginBottom: 14,
+    gap: 8,
   },
   errorText: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 13,
+    fontWeight: '500',
+    flex: 1,
   },
   inputGroup: {
     marginBottom: 14,
   },
   inputLabel: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
     marginBottom: 6,
   },
   input: {
     height: 48,
-    borderRadius: 12,
+    borderRadius: 10,
     borderWidth: 1,
     paddingHorizontal: 14,
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 15,
   },
   submitBtn: {
     marginTop: 6,
   },
   quickSection: {
-    marginTop: 6,
+    marginBottom: 10,
   },
-  quickHeaderRow: {
+  quickSectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  quickSectionSub: {
+    fontSize: 13,
+    marginBottom: 12,
+  },
+  rolesList: {
+    gap: 10,
+  },
+  roleCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 1,
+    padding: 12,
+  },
+  roleIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  roleCardText: {
+    flex: 1,
+    marginHorizontal: 12,
+  },
+  roleCardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 4,
+    marginBottom: 2,
   },
-  quickTitle: {
-    fontSize: 15,
-    fontWeight: '800',
-  },
-  quickBadge: {
-    fontSize: 10.5,
-    fontWeight: '700',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
-  },
-  quickSubtitle: {
-    fontSize: 12,
-    marginBottom: 14,
-    lineHeight: 17,
-  },
-  rolesGrid: {
-    gap: 12,
-  },
-  roleCard: {
-    borderRadius: 16,
-    padding: 14,
-    borderWidth: 1,
-  },
-  roleCardTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 6,
-    gap: 10,
-  },
-  roleIcon: {
-    fontSize: 24,
-  },
-  roleNameCol: {
-    flex: 1,
-  },
-  roleTitle: {
+  roleCardTitle: {
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   roleBadge: {
     fontSize: 11,
     fontWeight: '600',
-    marginTop: 1,
   },
-  roleDesc: {
-    fontSize: 11.5,
-    lineHeight: 16,
-    marginBottom: 10,
-  },
-  credPill: {
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-  },
-  credText: {
-    fontSize: 11,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  roleCardDesc: {
+    fontSize: 12,
   },
 });
-

@@ -12,7 +12,7 @@ import {
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
-import Button from '../../components/Button';
+import CustomIcon from '../../components/CustomIcon';
 
 export default function RegistrationApprovalsScreen({ onClose, onApproved }) {
   const { theme } = useTheme();
@@ -48,27 +48,88 @@ export default function RegistrationApprovalsScreen({ onClose, onApproved }) {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <View style={[styles.topBar, { backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.border }]}>
+      <View
+        style={[
+          styles.topBar,
+          {
+            backgroundColor: theme.colors.surface,
+            borderBottomColor: theme.colors.border,
+          },
+        ]}
+      >
         <View style={styles.topBarLeft}>
-          <Text style={styles.topIcon}>⏳</Text>
+          <View
+            style={[
+              styles.iconBox,
+              {
+                backgroundColor: theme.colors.iconContainerBg,
+                borderColor: theme.colors.iconContainerBorder,
+              },
+            ]}
+          >
+            <CustomIcon
+              library="Feather"
+              name="user-check"
+              size={18}
+              color={theme.colors.text}
+            />
+          </View>
           <View>
-            <Text style={[styles.topTitle, { color: theme.colors.text }]}>Applicant Queue</Text>
+            <Text style={[styles.topTitle, { color: theme.colors.text }]}>
+              Applicant Approvals
+            </Text>
             <Text style={[styles.topSub, { color: theme.colors.textSecondary }]}>
-              Pending Patient Registrations ({applicants.length})
+              Pending Patient Applications ({applicants.length})
             </Text>
           </View>
         </View>
 
-        <TouchableOpacity onPress={onClose} style={[styles.closeBtn, { backgroundColor: theme.colors.inputBg, borderColor: theme.colors.border }]}>
+        <TouchableOpacity
+          onPress={onClose}
+          style={[
+            styles.closeBtn,
+            {
+              backgroundColor: theme.colors.iconContainerBg,
+              borderColor: theme.colors.iconContainerBorder,
+            },
+          ]}
+          accessible={true}
+          accessibilityLabel="Done"
+        >
           <Text style={[styles.closeBtnText, { color: theme.colors.text }]}>Done</Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {applicants.length === 0 ? (
-          <View style={[styles.emptyBox, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}>
-            <Text style={styles.emptyIcon}>🎉</Text>
-            <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>Queue Clear!</Text>
+          <View
+            style={[
+              styles.emptyBox,
+              {
+                backgroundColor: theme.colors.cardBg,
+                borderColor: theme.colors.cardBorder,
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.emptyIconWrap,
+                {
+                  backgroundColor: theme.colors.iconContainerBg,
+                  borderColor: theme.colors.iconContainerBorder,
+                },
+              ]}
+            >
+              <CustomIcon
+                library="Feather"
+                name="check-circle"
+                size={32}
+                color={theme.colors.success}
+              />
+            </View>
+            <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
+              Queue Clear
+            </Text>
             <Text style={[styles.emptySub, { color: theme.colors.textSecondary }]}>
               All applicant registrations have been processed.
             </Text>
@@ -77,18 +138,51 @@ export default function RegistrationApprovalsScreen({ onClose, onApproved }) {
           applicants.map((item) => (
             <View
               key={item.reg_id}
-              style={[styles.applicantCard, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}
+              style={[
+                styles.applicantCard,
+                {
+                  backgroundColor: theme.colors.cardBg,
+                  borderColor: theme.colors.cardBorder,
+                },
+              ]}
             >
               <View style={styles.appHeader}>
-                <Text style={styles.appEmoji}>📝</Text>
+                <View
+                  style={[
+                    styles.avatarBox,
+                    {
+                      backgroundColor: theme.colors.iconContainerBg,
+                      borderColor: theme.colors.iconContainerBorder,
+                    },
+                  ]}
+                >
+                  <CustomIcon
+                    library="Feather"
+                    name="user"
+                    size={18}
+                    color={theme.colors.text}
+                  />
+                </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={[styles.appName, { color: theme.colors.text }]}>{item.fullname}</Text>
+                  <Text style={[styles.appName, { color: theme.colors.text }]}>
+                    {item.fullname}
+                  </Text>
                   <Text style={[styles.appSub, { color: theme.colors.textSecondary }]}>
                     @{item.username} • {item.email}
                   </Text>
                 </View>
-                <View style={[styles.rolePill, { backgroundColor: `${theme.colors.warning}18` }]}>
-                  <Text style={[styles.roleText, { color: theme.colors.warning }]}>Pending User</Text>
+                <View
+                  style={[
+                    styles.rolePill,
+                    {
+                      backgroundColor: theme.colors.iconContainerBg,
+                      borderColor: theme.colors.iconContainerBorder,
+                    },
+                  ]}
+                >
+                  <Text style={[styles.roleText, { color: theme.colors.warning }]}>
+                    Pending
+                  </Text>
                 </View>
               </View>
 
@@ -96,10 +190,22 @@ export default function RegistrationApprovalsScreen({ onClose, onApproved }) {
                 <TouchableOpacity
                   onPress={() => handleApprove(item.reg_id, item.fullname)}
                   activeOpacity={0.8}
-                  style={[styles.approveBtn, { backgroundColor: theme.colors.primary }]}
+                  style={[
+                    styles.approveBtn,
+                    {
+                      backgroundColor: theme.colors.primary,
+                      borderColor: theme.colors.buttonBorder,
+                    },
+                  ]}
                 >
+                  <CustomIcon
+                    library="Feather"
+                    name="check"
+                    size={16}
+                    color={theme.colors.textInverted}
+                  />
                   <Text style={[styles.approveText, { color: theme.colors.textInverted }]}>
-                    ✓ Approve & Enroll Patient
+                    Approve & Enroll Patient
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -116,8 +222,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   topBar: {
-    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 28) + 12 : 16,
-    paddingBottom: 14,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 28) + 8 : 14,
+    paddingBottom: 12,
     paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -129,93 +235,113 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  topIcon: {
-    fontSize: 22,
+  iconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   topTitle: {
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '700',
   },
   topSub: {
     fontSize: 11,
   },
   closeBtn: {
     paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
     borderWidth: 1,
   },
   closeBtnText: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 40,
+    paddingBottom: 36,
   },
   emptyBox: {
-    padding: 30,
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 1,
+    padding: 32,
     alignItems: 'center',
     marginTop: 40,
   },
-  emptyIcon: {
-    fontSize: 36,
-    marginBottom: 8,
+  emptyIconWrap: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 14,
   },
   emptyTitle: {
-    fontSize: 16,
-    fontWeight: '800',
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 4,
   },
   emptySub: {
-    fontSize: 12,
-    marginTop: 4,
+    fontSize: 13,
+    textAlign: 'center',
   },
   applicantCard: {
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 14,
     borderWidth: 1,
+    padding: 14,
     marginBottom: 12,
   },
   appHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    marginBottom: 12,
+    gap: 12,
   },
-  appEmoji: {
-    fontSize: 20,
+  avatarBox: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   appName: {
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   appSub: {
-    fontSize: 11.5,
-    marginTop: 1,
+    fontSize: 12,
+    marginTop: 2,
   },
   rolePill: {
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 4,
     borderRadius: 8,
+    borderWidth: 1,
   },
   roleText: {
-    fontSize: 10.5,
-    fontWeight: '700',
+    fontSize: 11,
+    fontWeight: '600',
   },
   actionRow: {
-    borderTopWidth: 1,
+    marginTop: 12,
     paddingTop: 12,
+    borderTopWidth: 1,
   },
   approveBtn: {
-    paddingVertical: 10,
-    borderRadius: 10,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    height: 42,
+    borderRadius: 10,
+    borderWidth: 1,
+    gap: 8,
   },
   approveText: {
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 13,
+    fontWeight: '600',
   },
 });
-

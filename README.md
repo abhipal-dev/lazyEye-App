@@ -28,22 +28,45 @@ Switchable on the fly from any screen or header with instant live UI adaptation:
 
 ---
 
-### 3. 🕹️ Playable Dichoptic Anaglyph Games
+### 3. 🕹️ 11 Clinical Vision & Dichoptic Gaming Engines
 In dichoptic amblyopia treatment, high-contrast chromatic elements are separated between the eyes to overcome brain suppression:
-- **Dichoptic Tetris**: Falling tetrominoes are rendered in the Left Eye color (e.g. Red, calibrated with Left Eye contrast), while the settled grid is rendered in the Right Eye color (e.g. Cyan/Blue). The patient must fuse both visual inputs to position the blocks.
-- **Dichoptic Snake**: The snake body is visible to the amblyopic eye, and the apple target is visible to the dominant eye, forcing active binocular coordination to locate and steer toward the food.
+- **Dichoptic Tetris**: Falling tetrominoes in Left Eye color vs settled grid in Right Eye color.
+- **Dichoptic Snake**: Snake body vs food targets split chromatically with edge-to-edge gesture navigation.
+- **Flappy Dichoptic, Chromatic Breaker & Anaglyph Pacman**: Dynamic suppression-breaking action games.
+- **Bullseye Saccades, Vernier Acuity & Fusion Depth Rings**: Oculomotor saccadic training & stereopsis exercises.
+- **Contrast Stairs, Binocular Racer & Visual Search**: Contrast sensitivity & binocular integration challenges.
+- **Dual Engine Toggle**: Seamlessly switch between native React Native gesture games and live interactive web engines in Settings.
 - **Auto-Recording**: Sessions automatically log game name, score, and elapsed therapy seconds to the clinical records database upon completion.
 
 ---
 
-### 4. 📅 84-Day (12-Week) Interactive Therapy Heatmap
+### 4. 🗄️ High-Speed MMKV Storage & Settings Engine
+- Fast key-value persistence via `mmkvStorage.js` with instant zero-overhead reads/writes.
+- Persistent user preferences: Theme selection, Engine mode (`Local Engine` vs `Webview Engine`), Audio toggles, and live/offline data toggles.
+- Automatic fallback synchronization ensuring offline sessions are never lost.
+
+---
+
+### 5. 📊 Real Clinical Data & Patient Overview
+- Real patient cohorts and consultation logs (`realDataService.js` / `realData.json`) with clinical metrics.
+- High-resolution real avatar integration (`avatarHelper.js`).
+- Dedicated **Patient Overview** screen presenting visual acuity trends, treatment adherence statistics, and active clinical notifications.
+
+---
+
+### 6. 📱 Custom Floating Bottom Tab Navigation
+- Custom bottom tab bar with curved floating pill styling, active glow indicators, and tactile feedback inspired by production TaxiMuscat architecture.
+
+---
+
+### 7. 📅 84-Day (12-Week) Interactive Therapy Heatmap
 - A responsive 7-row × 12-column GitHub-style contribution grid.
 - Color-coded by daily therapy volume (0 mins, 10–20 mins, 30+ mins).
 - **Single-Day Drill-Down**: Tap any calendar day cell to filter the sessions table and inspect exact game scores, play durations, and clinical notes from that date.
 
 ---
 
-### 5. 🌐 Live API & Resilient Offline Fallback
+### 8. 🌐 Live API & Resilient Offline Fallback
 - Connects to the live Render cloud deployment: `https://lazyeye.onrender.com`
 - Features a self-healing offline mock database with the full seeded clinical cohort so the mobile app operates with zero lag even without an active internet connection.
 
@@ -76,6 +99,7 @@ lazyEye_Mobile/
 │   ├── .xcode.env                       # Xcode build environment
 │   └── LazyEyeMobile/                   # Native iOS app bundle & AppDelegate
 └── src/
+    ├── assets/                          # App logos, therapy icons, game assets
     ├── context/
     │   ├── AuthContext.js               # Multi-role authentication & session state
     │   └── ThemeContext.js              # Dynamic 4-theme palette manager
@@ -83,10 +107,20 @@ lazyEye_Mobile/
     │   └── themes.js                    # 4 Clinical theme token definitions
     ├── services/
     │   ├── api.js                       # Live Render API client & mock database
+    │   ├── games.js                     # 11 Vision therapy game configurations
+    │   ├── mmkvStorage.js               # High-speed MMKV persistent storage
+    │   ├── settingsHandler.js           # Settings manager & preferences
+    │   ├── realDataService.js           # Real patient & consultation data service
+    │   ├── realData.json                # Seeded clinical dataset
+    │   ├── avatarHelper.js              # Patient & doctor profile avatar resolver
     │   └── storage.js                   # Cross-platform session persistence
     ├── navigation/
     │   └── RootNavigator.js             # Role-scoped screen routing & modal stacks
     ├── components/
+    │   ├── BottomTabBar.js              # Custom floating bottom navigation tab bar
+    │   ├── BrandLogo.js                 # LazyEye brand SVG/Vector component
+    │   ├── CustomIcon.js                # Vector icons helper
+    │   ├── GameWebView.js               # Embedded web game engine webview
     │   ├── HeaderBar.js                 # Top navigation with role badge & quick tools
     │   ├── MetricCard.js                # Polished KPI metric cards
     │   ├── HeatmapGrid.js               # 84-day interactive mobile therapy calendar
@@ -106,13 +140,14 @@ lazyEye_Mobile/
         │   └── RootSuperadminScreen.js  # Master superadmin control & admin provisioning
         ├── patient/
         │   ├── PatientHomeScreen.js     # Daily regimen progress & game launcher
+        │   ├── PatientOverviewScreen.js # Overview stats, acuity trends & announcements
         │   ├── DichopticTetrisGame.js   # Playable Dichoptic Tetris
-        │   ├── DichopticSnakeGame.js    # Playable Dichoptic Snake
+        │   ├── DichopticSnakeGame.js    # Playable Dichoptic Snake with gesture control
         │   ├── CalibrationScreen.js     # Patient lens contrast sliders
         │   └── TherapyHistoryScreen.js  # History logs & doctor remarks
         └── shared/
-            ├── ProfileScreen.js         # User info & theme selection
-            └── SettingsThemeModal.js    # Instant theme picker modal
+            ├── ProfileScreen.js         # User info, avatar & theme selection
+            └── SettingsThemeModal.js    # Settings & theme picker modal
 ```
 
 ---

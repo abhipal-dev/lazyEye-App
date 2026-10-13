@@ -12,6 +12,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { api } from '../../services/api';
 import HeaderBar from '../../components/HeaderBar';
 import MetricCard from '../../components/MetricCard';
+import CustomIcon from '../../components/CustomIcon';
 
 export default function AdminDashboardScreen({
   onOpenApprovals,
@@ -58,7 +59,7 @@ export default function AdminDashboardScreen({
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <HeaderBar
         title="Clinic Administration"
-        subtitle="Healthcare Hub"
+        subtitle="Operations Hub"
         onThemePress={onOpenThemeModal}
         onProfilePress={onOpenProfile}
       />
@@ -66,79 +67,111 @@ export default function AdminDashboardScreen({
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.primary} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={theme.colors.primary}
+          />
+        }
       >
-        {/* Pending Registrations Alert Card */}
+        {/* Pending Registrations Alert Banner */}
         {registers.length > 0 && (
           <TouchableOpacity
             onPress={onOpenApprovals}
             activeOpacity={0.8}
-            style={[styles.alertBanner, { backgroundColor: `${theme.colors.warning}18`, borderColor: theme.colors.warning }]}
+            style={[
+              styles.alertBanner,
+              {
+                backgroundColor: theme.colors.cardBg,
+                borderColor: theme.colors.warning,
+              },
+            ]}
           >
-            <View style={styles.alertLeft}>
-              <Text style={styles.alertIcon}>⏳</Text>
-              <View>
-                <Text style={[styles.alertTitle, { color: theme.colors.warning }]}>
-                  {registers.length} Registration Applicants Pending
-                </Text>
-                <Text style={[styles.alertSub, { color: theme.colors.textSecondary }]}>
-                  Tap here to review and enroll patient applications
-                </Text>
-              </View>
+            <View
+              style={[
+                styles.alertIconWrap,
+                {
+                  backgroundColor: `${theme.colors.warning}18`,
+                  borderColor: theme.colors.warning,
+                },
+              ]}
+            >
+              <CustomIcon
+                library="Feather"
+                name="clock"
+                size={18}
+                color={theme.colors.warning}
+              />
             </View>
-            <Text style={[styles.alertArrow, { color: theme.colors.warning }]}>Review ➔</Text>
+            <View style={styles.alertTextCol}>
+              <Text style={[styles.alertTitle, { color: theme.colors.text }]}>
+                {registers.length} Registration Applicants Pending
+              </Text>
+              <Text style={[styles.alertSub, { color: theme.colors.textSecondary }]}>
+                Tap to review patient onboarding requests
+              </Text>
+            </View>
+            <CustomIcon
+              library="Feather"
+              name="chevron-right"
+              size={18}
+              color={theme.colors.warning}
+            />
           </TouchableOpacity>
         )}
 
-        {/* 4 Clinic KPI Metrics */}
+        {/* 2 Key Clinic Metrics */}
         <View style={styles.metricsGrid}>
           <MetricCard
             title="Clinic Patients"
             value={patients.length.toString()}
             subtitle="Enrolled under therapy"
-            icon="👥"
+            iconName="users"
+            iconLibrary="Feather"
             accentColor={theme.colors.primary}
             style={styles.metricItem}
           />
           <MetricCard
             title="Optometrists"
             value={doctors.length.toString()}
-            subtitle="Supervising doctors"
-            icon="🩺"
+            subtitle="Clinical supervisors"
+            iconName="activity"
+            iconLibrary="Feather"
             accentColor={theme.colors.info}
-            style={styles.metricItem}
-          />
-          <MetricCard
-            title="Applicants Queue"
-            value={registers.length.toString()}
-            subtitle="Pending review"
-            icon="⏳"
-            accentColor={theme.colors.warning}
-            style={styles.metricItem}
-          />
-          <MetricCard
-            title="Clinic Adherence"
-            value="89%"
-            subtitle="Avg cohort compliance"
-            icon="📊"
-            accentColor={theme.colors.success}
             style={styles.metricItem}
           />
         </View>
 
-        {/* Tab Navigation */}
-        <View style={[styles.tabBar, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+        {/* Tab Selector */}
+        <View
+          style={[
+            styles.tabBar,
+            {
+              backgroundColor: theme.colors.surface,
+              borderColor: theme.colors.border,
+            },
+          ]}
+        >
           <TouchableOpacity
             onPress={() => setActiveTab('patients')}
             style={[
               styles.tabBtn,
-              activeTab === 'patients' && { backgroundColor: theme.colors.primary },
+              activeTab === 'patients' && {
+                backgroundColor: theme.colors.primary,
+                borderColor: theme.colors.buttonBorder,
+              },
             ]}
           >
             <Text
               style={[
                 styles.tabText,
-                { color: activeTab === 'patients' ? theme.colors.textInverted : theme.colors.textSecondary },
+                {
+                  color:
+                    activeTab === 'patients'
+                      ? theme.colors.textInverted
+                      : theme.colors.textSecondary,
+                },
               ]}
             >
               Patients ({patients.length})
@@ -149,13 +182,21 @@ export default function AdminDashboardScreen({
             onPress={() => setActiveTab('doctors')}
             style={[
               styles.tabBtn,
-              activeTab === 'doctors' && { backgroundColor: theme.colors.primary },
+              activeTab === 'doctors' && {
+                backgroundColor: theme.colors.primary,
+                borderColor: theme.colors.buttonBorder,
+              },
             ]}
           >
             <Text
               style={[
                 styles.tabText,
-                { color: activeTab === 'doctors' ? theme.colors.textInverted : theme.colors.textSecondary },
+                {
+                  color:
+                    activeTab === 'doctors'
+                      ? theme.colors.textInverted
+                      : theme.colors.textSecondary,
+                },
               ]}
             >
               Optometrists ({doctors.length})
@@ -163,35 +204,74 @@ export default function AdminDashboardScreen({
           </TouchableOpacity>
         </View>
 
-        {/* Patients Tab Content */}
+        {/* Patients Tab List */}
         {activeTab === 'patients' && (
           <View style={styles.listSection}>
             {patients.map((p) => (
               <View
                 key={p.id}
-                style={[styles.itemCard, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}
+                style={[
+                  styles.itemCard,
+                  {
+                    backgroundColor: theme.colors.cardBg,
+                    borderColor: theme.colors.cardBorder,
+                  },
+                ]}
               >
                 <View style={styles.itemHeader}>
-                  <Text style={styles.userEmoji}>🧒</Text>
+                  <View
+                    style={[
+                      styles.avatarBox,
+                      {
+                        backgroundColor: theme.colors.iconContainerBg,
+                        borderColor: theme.colors.iconContainerBorder,
+                      },
+                    ]}
+                  >
+                    <CustomIcon
+                      library="Feather"
+                      name="user"
+                      size={18}
+                      color={theme.colors.text}
+                    />
+                  </View>
+
                   <View style={{ flex: 1 }}>
-                    <Text style={[styles.itemName, { color: theme.colors.text }]}>{p.fullname}</Text>
+                    <Text style={[styles.itemName, { color: theme.colors.text }]}>
+                      {p.fullname}
+                    </Text>
                     <Text style={[styles.itemSub, { color: theme.colors.textSecondary }]}>
                       @{p.username} • {p.email}
                     </Text>
                   </View>
-                  <View style={[styles.badgePill, { backgroundColor: `${theme.colors.info}18` }]}>
+
+                  <View
+                    style={[
+                      styles.badgePill,
+                      {
+                        backgroundColor: theme.colors.iconContainerBg,
+                        borderColor: theme.colors.iconContainerBorder,
+                      },
+                    ]}
+                  >
                     <Text style={[styles.badgeText, { color: theme.colors.info }]}>
-                      {p.doctor_name || 'Dr. Sarah Mitchell'}
+                      {p.doctor_name || 'Dr. Mitchell'}
                     </Text>
                   </View>
                 </View>
 
                 <View style={[styles.paramRow, { borderTopColor: theme.colors.borderLight }]}>
                   <Text style={[styles.paramText, { color: theme.colors.textMuted }]}>
-                    Goal: <Text style={{ color: theme.colors.text }}>{p.user_playing_time || 20}m/day</Text>
+                    Daily Regimen:{' '}
+                    <Text style={{ color: theme.colors.text, fontWeight: '600' }}>
+                      {p.user_playing_time || 20}m/day
+                    </Text>
                   </Text>
                   <Text style={[styles.paramText, { color: theme.colors.textMuted }]}>
-                    Lenses: <Text style={{ color: theme.colors.text }}>{p.left_eye_color || 'Red'} / {p.right_eye_color || 'Blue'}</Text>
+                    Lenses:{' '}
+                    <Text style={{ color: theme.colors.text, fontWeight: '600' }}>
+                      {p.left_eye_color || 'Red'} / {p.right_eye_color || 'Blue'}
+                    </Text>
                   </Text>
                 </View>
               </View>
@@ -199,25 +279,58 @@ export default function AdminDashboardScreen({
           </View>
         )}
 
-        {/* Doctors Tab Content */}
+        {/* Doctors Tab List */}
         {activeTab === 'doctors' && (
           <View style={styles.listSection}>
             {doctors.map((d) => (
               <View
                 key={d.id}
-                style={[styles.itemCard, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}
+                style={[
+                  styles.itemCard,
+                  {
+                    backgroundColor: theme.colors.cardBg,
+                    borderColor: theme.colors.cardBorder,
+                  },
+                ]}
               >
                 <View style={styles.itemHeader}>
-                  <Text style={styles.userEmoji}>🩺</Text>
+                  <View
+                    style={[
+                      styles.avatarBox,
+                      {
+                        backgroundColor: theme.colors.iconContainerBg,
+                        borderColor: theme.colors.iconContainerBorder,
+                      },
+                    ]}
+                  >
+                    <CustomIcon
+                      library="MaterialCommunityIcons"
+                      name="doctor"
+                      size={20}
+                      color={theme.colors.info}
+                    />
+                  </View>
+
                   <View style={{ flex: 1 }}>
-                    <Text style={[styles.itemName, { color: theme.colors.text }]}>{d.fullname}</Text>
+                    <Text style={[styles.itemName, { color: theme.colors.text }]}>
+                      {d.fullname}
+                    </Text>
                     <Text style={[styles.itemSub, { color: theme.colors.textSecondary }]}>
                       @{d.username} • {d.email}
                     </Text>
                   </View>
-                  <View style={[styles.badgePill, { backgroundColor: `${theme.colors.success}18` }]}>
+
+                  <View
+                    style={[
+                      styles.badgePill,
+                      {
+                        backgroundColor: theme.colors.iconContainerBg,
+                        borderColor: theme.colors.iconContainerBorder,
+                      },
+                    ]}
+                  >
                     <Text style={[styles.badgeText, { color: theme.colors.success }]}>
-                      Active Practitioner
+                      Practitioner
                     </Text>
                   </View>
                 </View>
@@ -225,6 +338,8 @@ export default function AdminDashboardScreen({
             ))}
           </View>
         )}
+
+        <View style={{ height: 24 }} />
       </ScrollView>
     </View>
   );
@@ -236,106 +351,110 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 40,
+    paddingBottom: 36,
   },
   alertBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     padding: 14,
-    borderRadius: 16,
+    borderRadius: 14,
     borderWidth: 1,
     marginBottom: 16,
+    gap: 12,
   },
-  alertLeft: {
-    flexDirection: 'row',
+  alertIconWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    borderWidth: 1,
     alignItems: 'center',
-    gap: 10,
+    justifyContent: 'center',
+  },
+  alertTextCol: {
     flex: 1,
   },
-  alertIcon: {
-    fontSize: 22,
-  },
   alertTitle: {
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: 14,
+    fontWeight: '700',
   },
   alertSub: {
-    fontSize: 11,
-    marginTop: 2,
-  },
-  alertArrow: {
     fontSize: 12,
-    fontWeight: '800',
+    marginTop: 2,
   },
   metricsGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 18,
+    gap: 12,
+    marginBottom: 16,
   },
   metricItem: {
-    width: '48%',
+    flex: 1,
   },
   tabBar: {
     flexDirection: 'row',
     borderRadius: 12,
-    padding: 4,
     borderWidth: 1,
-    marginBottom: 14,
+    padding: 4,
+    marginBottom: 16,
+    gap: 4,
   },
   tabBtn: {
     flex: 1,
-    paddingVertical: 9,
+    paddingVertical: 10,
     borderRadius: 8,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   tabText: {
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 13,
+    fontWeight: '600',
   },
   listSection: {
-    gap: 10,
+    gap: 12,
   },
   itemCard: {
-    borderRadius: 16,
-    padding: 14,
+    borderRadius: 14,
     borderWidth: 1,
+    padding: 14,
   },
   itemHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    marginBottom: 8,
+    gap: 12,
   },
-  userEmoji: {
-    fontSize: 22,
+  avatarBox: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   itemName: {
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   itemSub: {
-    fontSize: 11.5,
-    marginTop: 1,
+    fontSize: 12,
+    marginTop: 2,
   },
   badgePill: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: 1,
   },
   badgeText: {
-    fontSize: 10.5,
-    fontWeight: '700',
+    fontSize: 11,
+    fontWeight: '600',
   },
   paramRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 10,
+    paddingTop: 10,
     borderTopWidth: 1,
-    paddingTop: 8,
   },
   paramText: {
-    fontSize: 11,
+    fontSize: 12,
   },
 });
-

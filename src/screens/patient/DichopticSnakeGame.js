@@ -10,6 +10,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { api } from '../../services/api';
+import CustomIcon from '../../components/CustomIcon';
 
 const GRID_SIZE = 14;
 
@@ -157,8 +158,9 @@ export default function DichopticSnakeGame({ onClose }) {
           </Text>
         </View>
 
-        <TouchableOpacity onPress={handleExit} style={styles.exitBtn}>
-          <Text style={styles.exitBtnText}>✕ Exit</Text>
+        <TouchableOpacity onPress={handleExit} style={styles.exitBtn} accessible={true} accessibilityLabel="Exit snake game">
+          <CustomIcon library="Feather" name="x" size={13} color="#FFFFFF" style={{ marginRight: 4 }} />
+          <Text style={styles.exitBtnText}>Exit</Text>
         </TouchableOpacity>
       </View>
 
@@ -230,22 +232,22 @@ export default function DichopticSnakeGame({ onClose }) {
 
       {/* 4-Way D-Pad Touch Controls */}
       <View style={styles.dpadWrap}>
-        <TouchableOpacity onPress={() => handleDirChange('UP')} style={[styles.dpadBtn, styles.dpadUp]}>
-          <Text style={styles.dpadText}>▲</Text>
+        <TouchableOpacity onPress={() => handleDirChange('UP')} style={[styles.dpadBtn, styles.dpadUp]} accessible={true} accessibilityLabel="Move up">
+          <CustomIcon library="Feather" name="chevron-up" size={24} color="#00E5FF" />
         </TouchableOpacity>
 
         <View style={styles.dpadMidRow}>
-          <TouchableOpacity onPress={() => handleDirChange('LEFT')} style={styles.dpadBtn}>
-            <Text style={styles.dpadText}>◀</Text>
+          <TouchableOpacity onPress={() => handleDirChange('LEFT')} style={styles.dpadBtn} accessible={true} accessibilityLabel="Move left">
+            <CustomIcon library="Feather" name="chevron-left" size={24} color="#00E5FF" />
           </TouchableOpacity>
           <View style={styles.dpadCenter} />
-          <TouchableOpacity onPress={() => handleDirChange('RIGHT')} style={styles.dpadBtn}>
-            <Text style={styles.dpadText}>▶</Text>
+          <TouchableOpacity onPress={() => handleDirChange('RIGHT')} style={styles.dpadBtn} accessible={true} accessibilityLabel="Move right">
+            <CustomIcon library="Feather" name="chevron-right" size={24} color="#00E5FF" />
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={() => handleDirChange('DOWN')} style={[styles.dpadBtn, styles.dpadDown]}>
-          <Text style={styles.dpadText}>▼</Text>
+        <TouchableOpacity onPress={() => handleDirChange('DOWN')} style={[styles.dpadBtn, styles.dpadDown]} accessible={true} accessibilityLabel="Move down">
+          <CustomIcon library="Feather" name="chevron-down" size={24} color="#00E5FF" />
         </TouchableOpacity>
       </View>
     </View>
@@ -256,6 +258,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 28) + 12 : 18,
+    paddingBottom: Platform.OS === 'android' ? 28 : 14,
     paddingHorizontal: 12,
   },
   topBar: {
@@ -275,6 +278,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   exitBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,

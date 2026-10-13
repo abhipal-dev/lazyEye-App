@@ -1,32 +1,40 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { THEMES, DEFAULT_THEME } from '../theme/themes';
-import { getStoredTheme, storeTheme } from '../services/storage';
+import settingsHandler from '../services/settingsHandler';
 
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [themeKey, setThemeKey] = useState(DEFAULT_THEME);
+  const [themeKey, setThemeKey] = useState(() => settingsHandler.getTheme());
+  const [useWebGames, setUseWebGamesState] = useState(() => settingsHandler.getUseWebGames());
 
   useEffect(() => {
-    // Load stored theme on boot
-    const loadTheme = async () => {
-      try {
-        const saved = await getStoredTheme();
-        if (saved && THEMES[saved]) {
-          setThemeKey(saved);
-        }
-      } catch (e) {
-        // Fallback to default
+    // Subscribe to settings changes via settingsHandler
+    const unsubscribe = settingsHandler.subscribe((allSettings) => {
+      if (allSettings.themeKey && THEMES[allSettings.themeKey]) {
+        setThemeKey(allSettings.themeKey);
       }
-    };
-    loadTheme();
+      setUseWebGamesState(Boolean(allSettings.useWebGames));
+    });
+    return unsubscribe;
   }, []);
 
-  const changeTheme = async (key) => {
+  const changeTheme = (key) => {
     if (THEMES[key]) {
       setThemeKey(key);
-      await storeTheme(key);
+      settingsHandler.setTheme(key);
     }
+  };
+
+  const setUseWebGames = (val) => {
+    setUseWebGamesState(Boolean(val));
+    settingsHandler.setUseWebGames(Boolean(val));
+  };
+
+  const toggleUseWebGames = () => {
+    const nextVal = !useWebGames;
+    setUseWebGamesState(nextVal);
+    settingsHandler.setUseWebGames(nextVal);
   };
 
   const theme = THEMES[themeKey] || THEMES[DEFAULT_THEME];
@@ -38,6 +46,9 @@ export const ThemeProvider = ({ children }) => {
         theme,
         changeTheme,
         themes: Object.values(THEMES),
+        useWebGames,
+        setUseWebGames,
+        toggleUseWebGames,
       }}
     >
       {children}
@@ -52,4 +63,3 @@ export const useTheme = () => {
   }
   return context;
 };
-

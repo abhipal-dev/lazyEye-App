@@ -6,42 +6,46 @@ const AuthContext = createContext();
 
 export const QUICK_ROLES = [
   {
-    role: 'doctor',
-    title: 'Dr. Sarah Mitchell',
-    subtitle: 'Clinical Optometrist',
-    username: 'dr_sarah',
-    password: 'doctor123',
-    icon: '🩺',
-    badge: 'Doctor Portal',
-    scopeDescription: 'Sees assigned patients (Abhishek & Riya), reviews therapy heatmap, logs consultations',
-  },
-  {
-    role: 'admin',
-    title: 'Clinic Administrator',
-    subtitle: 'Healthcare Admin',
-    username: 'admin',
-    password: 'admin123',
-    icon: '🏥',
-    badge: 'Clinic Admin',
-    scopeDescription: 'Manages clinic patients & doctors, approves pending applicant registrations',
-  },
-  {
     role: 'patient',
     title: 'Abhishek Pal (Patient)',
-    subtitle: 'Pediatric Vision Therapy',
-    username: 'abhi8535',
-    password: '9870',
-    icon: '🎮',
+    subtitle: 'Vision Therapy Patient',
+    username: 'abhicoder',
+    password: '4567',
+    iconLibrary: 'Ionicons',
+    iconName: 'eye-outline',
     badge: 'Patient Portal',
     scopeDescription: 'Plays dichoptic anaglyph games (Tetris, Snake), adjusts red-cyan calibration',
   },
   {
+    role: 'doctor',
+    title: 'Dr. Sameer Arora',
+    subtitle: 'Clinical Optometrist',
+    username: 'dr_arora',
+    password: 'doctor123',
+    iconLibrary: 'MaterialCommunityIcons',
+    iconName: 'doctor',
+    badge: 'Doctor Portal',
+    scopeDescription: 'Sees assigned cohort, reviews therapy heatmap, logs consultations',
+  },
+  {
+    role: 'admin',
+    title: 'Pranjal Agarwal (Admin)',
+    subtitle: 'Healthcare Admin',
+    username: 'pranjal',
+    password: '4567',
+    iconLibrary: 'MaterialCommunityIcons',
+    iconName: 'shield-account-outline',
+    badge: 'Clinic Admin',
+    scopeDescription: 'Manages clinic patients & doctors, approves pending applicant registrations',
+  },
+  {
     role: 'root',
-    title: 'Master Root Control',
+    title: 'Root Administrator',
     subtitle: 'System Superadmin',
     username: 'root',
     password: 'root123',
-    icon: '👑',
+    iconLibrary: 'Ionicons',
+    iconName: 'shield-checkmark-outline',
     badge: 'Superadmin',
     scopeDescription: 'Platform master oversight, provisions new administrators, view full roster',
   },
@@ -60,8 +64,8 @@ export const AuthProvider = ({ children }) => {
         if (saved) {
           setCurrentUser(saved);
         } else {
-          // Default to Doctor portal for demo preview if not logged in
-          const defaultUser = MOCK_USERS.find((u) => u.username === 'dr_sarah');
+          // Default to patient portal for therapy preview if not logged in
+          const defaultUser = MOCK_USERS.find((u) => u.username === 'abhicoder') || MOCK_USERS[0];
           setCurrentUser(defaultUser);
         }
       } catch (e) {

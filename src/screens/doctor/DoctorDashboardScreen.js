@@ -12,6 +12,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { api } from '../../services/api';
 import HeaderBar from '../../components/HeaderBar';
 import MetricCard from '../../components/MetricCard';
+import CustomIcon from '../../components/CustomIcon';
 
 export default function DoctorDashboardScreen({
   navigation,
@@ -51,7 +52,7 @@ export default function DoctorDashboardScreen({
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <HeaderBar
-        title="Optometry Practice"
+        title="Optometry Portal"
         subtitle={currentUser?.fullname || 'Dr. Sarah Mitchell'}
         onThemePress={onOpenThemeModal}
         onProfilePress={onOpenProfile}
@@ -60,143 +61,253 @@ export default function DoctorDashboardScreen({
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.primary} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={theme.colors.primary}
+          />
+        }
       >
         {/* Scope Notice Banner */}
-        <View style={[styles.scopeBanner, { backgroundColor: theme.colors.badgeBg, borderColor: theme.colors.border }]}>
-          <Text style={styles.scopeIcon}>🔒</Text>
+        <View
+          style={[
+            styles.scopeBanner,
+            {
+              backgroundColor: theme.colors.cardBg,
+              borderColor: theme.colors.cardBorder,
+            },
+          ]}
+        >
+          <View
+            style={[
+              styles.scopeIconWrap,
+              {
+                backgroundColor: theme.colors.iconContainerBg,
+                borderColor: theme.colors.iconContainerBorder,
+              },
+            ]}
+          >
+            <CustomIcon
+              library="Feather"
+              name="shield"
+              size={18}
+              color={theme.colors.primary}
+            />
+          </View>
           <View style={styles.scopeTextCol}>
             <Text style={[styles.scopeTitle, { color: theme.colors.text }]}>
-              Clinical Data Scope: Strictly Assigned Cohort
+              Clinical Privacy Scope
             </Text>
             <Text style={[styles.scopeSub, { color: theme.colors.textSecondary }]}>
-              You only have access to your assigned pediatric patients and your own evaluations.
+              Access is strictly restricted to your assigned cohort and direct evaluations.
             </Text>
           </View>
         </View>
 
-        {/* 4 Clinical KPI Metrics */}
+        {/* 2x2 Metric KPI Grid */}
         <View style={styles.metricsGrid}>
           <MetricCard
-            title="Assigned Patients"
+            title="Cohort Patients"
             value={patients.length.toString()}
             subtitle="Active amblyopia therapy"
-            icon="👥"
+            iconName="users"
+            iconLibrary="Feather"
             accentColor={theme.colors.primary}
             style={styles.metricItem}
           />
           <MetricCard
-            title="Prescribed Regimen"
-            value="22 min"
-            subtitle="Daily target avg"
-            icon="⏱️"
+            title="Prescribed Target"
+            value="20 min"
+            subtitle="Daily regimen average"
+            iconName="clock"
+            iconLibrary="Feather"
             accentColor={theme.colors.info}
-            style={styles.metricItem}
-          />
-          <MetricCard
-            title="Therapy Adherence"
-            value="92%"
-            subtitle="Weekly compliance"
-            icon="📈"
-            accentColor={theme.colors.success}
-            style={styles.metricItem}
-          />
-          <MetricCard
-            title="Suppression Reduction"
-            value="35%"
-            subtitle="Binocular fusion gain"
-            icon="👁️"
-            accentColor={theme.colors.accentRed}
             style={styles.metricItem}
           />
         </View>
 
-        {/* Patients Section */}
+        {/* Section Heading */}
         <View style={styles.sectionHeaderRow}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            My Assigned Patient Cohort ({patients.length})
+            Assigned Patients ({patients.length})
           </Text>
-          <TouchableOpacity onPress={loadData}>
-            <Text style={[styles.reloadText, { color: theme.colors.primary }]}>↻ Refresh</Text>
+          <TouchableOpacity onPress={loadData} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <Text style={[styles.reloadText, { color: theme.colors.primary }]}>
+              Refresh
+            </Text>
           </TouchableOpacity>
         </View>
 
         {patients.map((patient) => (
           <View
             key={patient.id}
-            style={[styles.patientCard, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}
+            style={[
+              styles.patientCard,
+              {
+                backgroundColor: theme.colors.cardBg,
+                borderColor: theme.colors.cardBorder,
+              },
+            ]}
           >
             <View style={styles.cardTopRow}>
-              <View style={[styles.avatarBox, { backgroundColor: theme.colors.surfaceHighlight }]}>
-                <Text style={styles.avatarEmoji}>🧒</Text>
+              <View
+                style={[
+                  styles.avatarBox,
+                  {
+                    backgroundColor: theme.colors.iconContainerBg,
+                    borderColor: theme.colors.iconContainerBorder,
+                  },
+                ]}
+              >
+                <CustomIcon
+                  library="Feather"
+                  name="user"
+                  size={20}
+                  color={theme.colors.text}
+                />
               </View>
 
               <View style={styles.patientInfoCol}>
-                <Text style={[styles.patientName, { color: theme.colors.text }]}>{patient.fullname}</Text>
+                <Text style={[styles.patientName, { color: theme.colors.text }]}>
+                  {patient.fullname}
+                </Text>
                 <Text style={[styles.patientUser, { color: theme.colors.textSecondary }]}>
-                  @{patient.username} • Goal: {patient.user_playing_time || 20}m/day
+                  @{patient.username} • {patient.user_playing_time || 20}m/day
                 </Text>
               </View>
 
-              <View style={[styles.activeStatusPill, { backgroundColor: `${theme.colors.success}18` }]}>
+              <View
+                style={[
+                  styles.activeStatusPill,
+                  {
+                    backgroundColor: theme.colors.iconContainerBg,
+                    borderColor: theme.colors.iconContainerBorder,
+                  },
+                ]}
+              >
                 <View style={[styles.greenDot, { backgroundColor: theme.colors.success }]} />
-                <Text style={[styles.statusText, { color: theme.colors.success }]}>Enrolled</Text>
+                <Text style={[styles.statusText, { color: theme.colors.success }]}>
+                  Active
+                </Text>
               </View>
             </View>
 
-            {/* Lens Calibration Preview Chips */}
+            {/* Lens Calibration Preview */}
             <View style={styles.lensChipsRow}>
-              <View style={[styles.lensChip, { backgroundColor: theme.colors.inputBg, borderColor: theme.colors.border }]}>
-                <Text style={[styles.lensLabel, { color: theme.colors.textMuted }]}>Left Lens: </Text>
-                <View style={[styles.colorSquare, { backgroundColor: patient.left_eye_contrast_color || '#ff0000' }]} />
-                <Text style={[styles.lensValue, { color: theme.colors.text }]}>
-                  {patient.left_eye_color || 'red'} ({patient.left_eye_contrastvalue || 255})
+              <View
+                style={[
+                  styles.lensChip,
+                  {
+                    backgroundColor: theme.colors.iconContainerBg,
+                    borderColor: theme.colors.iconContainerBorder,
+                  },
+                ]}
+              >
+                <View
+                  style={[
+                    styles.colorDot,
+                    { backgroundColor: patient.left_eye_contrast_color || '#EF4444' },
+                  ]}
+                />
+                <Text style={[styles.lensChipText, { color: theme.colors.textSecondary }]}>
+                  L: {patient.left_eye_color || 'Red'}
                 </Text>
               </View>
 
-              <View style={[styles.lensChip, { backgroundColor: theme.colors.inputBg, borderColor: theme.colors.border }]}>
-                <Text style={[styles.lensLabel, { color: theme.colors.textMuted }]}>Right Lens: </Text>
-                <View style={[styles.colorSquare, { backgroundColor: patient.right_eye_contrast_color || '#0000ff' }]} />
-                <Text style={[styles.lensValue, { color: theme.colors.text }]}>
-                  {patient.right_eye_color || 'blue'} ({patient.right_eye_contrastvalue || 255})
+              <View
+                style={[
+                  styles.lensChip,
+                  {
+                    backgroundColor: theme.colors.iconContainerBg,
+                    borderColor: theme.colors.iconContainerBorder,
+                  },
+                ]}
+              >
+                <View
+                  style={[
+                    styles.colorDot,
+                    { backgroundColor: patient.right_eye_contrast_color || '#0284C7' },
+                  ]}
+                />
+                <Text style={[styles.lensChipText, { color: theme.colors.textSecondary }]}>
+                  R: {patient.right_eye_color || 'Blue'}
                 </Text>
               </View>
             </View>
 
-            {/* Action Buttons */}
+            {/* Clear Separated Action Buttons */}
             <View style={[styles.actionRow, { borderTopColor: theme.colors.borderLight }]}>
               <TouchableOpacity
                 onPress={() => onOpenPatientHeatmap && onOpenPatientHeatmap(patient)}
                 activeOpacity={0.8}
-                style={[styles.btnAction, { backgroundColor: `${theme.colors.primary}18`, borderColor: theme.colors.primary }]}
+                style={[
+                  styles.btnAction,
+                  {
+                    backgroundColor: theme.colors.iconContainerBg,
+                    borderColor: theme.colors.iconContainerBorder,
+                  },
+                ]}
               >
+                <CustomIcon
+                  library="Feather"
+                  name="calendar"
+                  size={15}
+                  color={theme.colors.primary}
+                />
                 <Text style={[styles.btnActionText, { color: theme.colors.primary }]}>
-                  🔥 Activity Heatmap
+                  Heatmap
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={() => onOpenPatientDetail && onOpenPatientDetail(patient)}
                 activeOpacity={0.8}
-                style={[styles.btnAction, { backgroundColor: theme.colors.surfaceElevated, borderColor: theme.colors.border }]}
+                style={[
+                  styles.btnAction,
+                  {
+                    backgroundColor: theme.colors.iconContainerBg,
+                    borderColor: theme.colors.iconContainerBorder,
+                  },
+                ]}
               >
+                <CustomIcon
+                  library="Feather"
+                  name="sliders"
+                  size={15}
+                  color={theme.colors.text}
+                />
                 <Text style={[styles.btnActionText, { color: theme.colors.text }]}>
-                  ⚙️ Calibrate
+                  Calibrate
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={() => onOpenNewConsultation && onOpenNewConsultation(patient)}
                 activeOpacity={0.8}
-                style={[styles.btnAction, { backgroundColor: `${theme.colors.accentRed}18`, borderColor: theme.colors.accentRed }]}
+                style={[
+                  styles.btnAction,
+                  {
+                    backgroundColor: theme.colors.iconContainerBg,
+                    borderColor: theme.colors.iconContainerBorder,
+                  },
+                ]}
               >
+                <CustomIcon
+                  library="Feather"
+                  name="file-text"
+                  size={15}
+                  color={theme.colors.accentRed}
+                />
                 <Text style={[styles.btnActionText, { color: theme.colors.accentRed }]}>
-                  📝 Evaluate
+                  Consult
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
         ))}
+
+        <View style={{ height: 24 }} />
       </ScrollView>
     </View>
   );
@@ -208,40 +319,44 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 40,
+    paddingBottom: 36,
   },
   scopeBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
+    padding: 14,
     borderRadius: 14,
     borderWidth: 1,
     marginBottom: 16,
-    gap: 10,
+    gap: 12,
   },
-  scopeIcon: {
-    fontSize: 20,
+  scopeIconWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   scopeTextCol: {
     flex: 1,
   },
   scopeTitle: {
-    fontSize: 12.5,
+    fontSize: 14,
     fontWeight: '700',
   },
   scopeSub: {
-    fontSize: 11,
+    fontSize: 12,
     marginTop: 2,
-    lineHeight: 15,
+    lineHeight: 16,
   },
   metricsGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
+    gap: 12,
     marginBottom: 20,
   },
   metricItem: {
-    width: '48%',
+    flex: 1,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
@@ -250,47 +365,39 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 15,
-    fontWeight: '800',
-    letterSpacing: -0.2,
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 0.1,
   },
   reloadText: {
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 13,
+    fontWeight: '600',
   },
   patientCard: {
-    borderRadius: 18,
-    padding: 16,
+    borderRadius: 14,
     borderWidth: 1,
-    marginBottom: 14,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 2,
+    padding: 14,
+    marginBottom: 12,
   },
   cardTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
   },
   avatarBox: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
-  },
-  avatarEmoji: {
-    fontSize: 22,
   },
   patientInfoCol: {
     flex: 1,
   },
   patientName: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 15,
+    fontWeight: '600',
   },
   patientUser: {
     fontSize: 12,
@@ -302,6 +409,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
+    borderWidth: 1,
     gap: 5,
   },
   greenDot: {
@@ -311,54 +419,50 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   lensChipsRow: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 14,
+    marginTop: 10,
   },
   lensChip: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 8,
-    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
     borderWidth: 1,
-    gap: 4,
+    gap: 6,
   },
-  colorSquare: {
-    width: 10,
-    height: 10,
-    borderRadius: 3,
-    marginHorizontal: 2,
+  colorDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
-  lensLabel: {
-    fontSize: 10,
-    fontWeight: '600',
-  },
-  lensValue: {
-    fontSize: 10.5,
-    fontWeight: '700',
-    textTransform: 'capitalize',
+  lensChipText: {
+    fontSize: 12,
+    fontWeight: '500',
   },
   actionRow: {
     flexDirection: 'row',
-    borderTopWidth: 1,
-    paddingTop: 12,
     gap: 8,
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
   },
   btnAction: {
     flex: 1,
-    paddingVertical: 9,
-    borderRadius: 10,
-    borderWidth: 1,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    height: 38,
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 6,
   },
   btnActionText: {
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: 12,
+    fontWeight: '600',
   },
 });
-

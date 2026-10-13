@@ -6,11 +6,13 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { api } from '../../services/api';
-import HeaderBar from '../../components/HeaderBar';
 import Button from '../../components/Button';
+import CustomIcon from '../../components/CustomIcon';
 
 export default function PatientDetailScreen({ patient, onClose, onUpdated }) {
   const { theme } = useTheme();
@@ -23,9 +25,9 @@ export default function PatientDetailScreen({ patient, onClose, onUpdated }) {
   const [saving, setSaving] = useState(false);
 
   const colorsList = [
-    { name: 'red', hex: '#FF0033' },
-    { name: 'blue', hex: '#0066FF' },
-    { name: 'green', hex: '#00CC66' },
+    { name: 'red', hex: '#EF4444' },
+    { name: 'blue', hex: '#0284C7' },
+    { name: 'green', hex: '#10B981' },
     { name: 'cyan', hex: '#00E5FF' },
   ];
 
@@ -34,8 +36,8 @@ export default function PatientDetailScreen({ patient, onClose, onUpdated }) {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const leftHex = colorsList.find((c) => c.name === leftColor)?.hex || '#FF0033';
-      const rightHex = colorsList.find((c) => c.name === rightColor)?.hex || '#0066FF';
+      const leftHex = colorsList.find((c) => c.name === leftColor)?.hex || '#EF4444';
+      const rightHex = colorsList.find((c) => c.name === rightColor)?.hex || '#0284C7';
 
       await api.updateCalibration(patient.id, {
         left_eye_color: leftColor,
@@ -59,34 +61,79 @@ export default function PatientDetailScreen({ patient, onClose, onUpdated }) {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <View style={[styles.topBar, { backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.border }]}>
+      <View
+        style={[
+          styles.topBar,
+          {
+            backgroundColor: theme.colors.surface,
+            borderBottomColor: theme.colors.border,
+          },
+        ]}
+      >
         <View style={styles.topBarLeft}>
-          <Text style={styles.topIcon}>⚙️</Text>
+          <View
+            style={[
+              styles.iconBox,
+              {
+                backgroundColor: theme.colors.iconContainerBg,
+                borderColor: theme.colors.iconContainerBorder,
+              },
+            ]}
+          >
+            <CustomIcon
+              library="Feather"
+              name="sliders"
+              size={18}
+              color={theme.colors.text}
+            />
+          </View>
           <View>
-            <Text style={[styles.topTitle, { color: theme.colors.text }]}>Lens Calibration</Text>
-            <Text style={[styles.topSub, { color: theme.colors.textSecondary }]}>{patient?.fullname}</Text>
+            <Text style={[styles.topTitle, { color: theme.colors.text }]}>
+              Lens Calibration
+            </Text>
+            <Text style={[styles.topSub, { color: theme.colors.textSecondary }]}>
+              {patient?.fullname}
+            </Text>
           </View>
         </View>
 
-        <TouchableOpacity onPress={onClose} style={[styles.closeBtn, { backgroundColor: theme.colors.inputBg, borderColor: theme.colors.border }]}>
+        <TouchableOpacity
+          onPress={onClose}
+          style={[
+            styles.closeBtn,
+            {
+              backgroundColor: theme.colors.iconContainerBg,
+              borderColor: theme.colors.iconContainerBorder,
+            },
+          ]}
+          accessible={true}
+          accessibilityLabel="Cancel"
+        >
           <Text style={[styles.closeBtnText, { color: theme.colors.text }]}>Cancel</Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Dichoptic Dual-Eye Fusion Preview Canvas */}
-        <View style={[styles.previewCard, { backgroundColor: '#05070D', borderColor: theme.colors.border }]}>
-          <Text style={[styles.previewHeader, { color: theme.colors.textMuted }]}>
+        {/* Dichoptic Fusion Preview */}
+        <View
+          style={[
+            styles.previewCard,
+            {
+              backgroundColor: '#05070D',
+              borderColor: theme.colors.cardBorder,
+            },
+          ]}
+        >
+          <Text style={[styles.previewHeader, { color: '#94A3B8' }]}>
             DICHOPTIC ANAGLYPH FUSION PREVIEW
           </Text>
 
           <View style={styles.fusionBox}>
-            {/* Left Eye Object */}
             <View
               style={[
                 styles.fusionObject,
                 {
-                  backgroundColor: colorsList.find((c) => c.name === leftColor)?.hex || '#FF0033',
+                  backgroundColor: colorsList.find((c) => c.name === leftColor)?.hex || '#EF4444',
                   opacity: leftContrast / 255,
                   transform: [{ rotate: '-8deg' }],
                 },
@@ -95,12 +142,11 @@ export default function PatientDetailScreen({ patient, onClose, onUpdated }) {
               <Text style={styles.fusionLabel}>OS (Left)</Text>
             </View>
 
-            {/* Right Eye Object */}
             <View
               style={[
                 styles.fusionObject,
                 {
-                  backgroundColor: colorsList.find((c) => c.name === rightColor)?.hex || '#0066FF',
+                  backgroundColor: colorsList.find((c) => c.name === rightColor)?.hex || '#0284C7',
                   opacity: rightContrast / 255,
                   transform: [{ rotate: '8deg' }],
                 },
@@ -110,18 +156,26 @@ export default function PatientDetailScreen({ patient, onClose, onUpdated }) {
             </View>
           </View>
 
-          <Text style={[styles.previewHint, { color: theme.colors.textSecondary }]}>
+          <Text style={[styles.previewHint, { color: '#94A3B8' }]}>
             Child fuses both chromatic streams into a single binocular percept
           </Text>
         </View>
 
         {/* Left Lens Configuration */}
-        <View style={[styles.configCard, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}>
+        <View
+          style={[
+            styles.configCard,
+            {
+              backgroundColor: theme.colors.cardBg,
+              borderColor: theme.colors.cardBorder,
+            },
+          ]}
+        >
           <Text style={[styles.configTitle, { color: theme.colors.text }]}>
             Left Eye Filter (OS)
           </Text>
 
-          <Text style={[styles.label, { color: theme.colors.textSecondary }]}>Anaglyph Lens Color:</Text>
+          <Text style={[styles.label, { color: theme.colors.textSecondary }]}>Filter Color:</Text>
           <View style={styles.colorRow}>
             {colorsList.map((c) => (
               <TouchableOpacity
@@ -131,30 +185,55 @@ export default function PatientDetailScreen({ patient, onClose, onUpdated }) {
                   styles.colorButton,
                   {
                     backgroundColor: c.hex,
-                    borderColor: leftColor === c.name ? '#FFFFFF' : 'transparent',
+                    borderColor:
+                      leftColor === c.name
+                        ? theme.colors.text
+                        : theme.colors.iconContainerBorder,
                     borderWidth: leftColor === c.name ? 3 : 1,
                   },
                 ]}
               >
-                {leftColor === c.name && <Text style={styles.checkIcon}>✓</Text>}
+                {leftColor === c.name && (
+                  <CustomIcon
+                    library="Feather"
+                    name="check"
+                    size={14}
+                    color="#FFFFFF"
+                  />
+                )}
               </TouchableOpacity>
             ))}
           </View>
 
           <View style={styles.contrastRow}>
             <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
-              Contrast Intensity: <Text style={{ color: theme.colors.text, fontWeight: '700' }}>{leftContrast} / 255</Text>
+              Contrast:{' '}
+              <Text style={{ color: theme.colors.text, fontWeight: '700' }}>
+                {leftContrast} / 255
+              </Text>
             </Text>
             <View style={styles.stepButtons}>
               <TouchableOpacity
                 onPress={() => setLeftContrast(Math.max(50, leftContrast - 25))}
-                style={[styles.stepBtn, { backgroundColor: theme.colors.surfaceElevated, borderColor: theme.colors.border }]}
+                style={[
+                  styles.stepBtn,
+                  {
+                    backgroundColor: theme.colors.iconContainerBg,
+                    borderColor: theme.colors.iconContainerBorder,
+                  },
+                ]}
               >
                 <Text style={[styles.stepText, { color: theme.colors.text }]}>- 25</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setLeftContrast(Math.min(255, leftContrast + 25))}
-                style={[styles.stepBtn, { backgroundColor: theme.colors.surfaceElevated, borderColor: theme.colors.border }]}
+                style={[
+                  styles.stepBtn,
+                  {
+                    backgroundColor: theme.colors.iconContainerBg,
+                    borderColor: theme.colors.iconContainerBorder,
+                  },
+                ]}
               >
                 <Text style={[styles.stepText, { color: theme.colors.text }]}>+ 25</Text>
               </TouchableOpacity>
@@ -163,12 +242,20 @@ export default function PatientDetailScreen({ patient, onClose, onUpdated }) {
         </View>
 
         {/* Right Lens Configuration */}
-        <View style={[styles.configCard, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}>
+        <View
+          style={[
+            styles.configCard,
+            {
+              backgroundColor: theme.colors.cardBg,
+              borderColor: theme.colors.cardBorder,
+            },
+          ]}
+        >
           <Text style={[styles.configTitle, { color: theme.colors.text }]}>
             Right Eye Filter (OD)
           </Text>
 
-          <Text style={[styles.label, { color: theme.colors.textSecondary }]}>Anaglyph Lens Color:</Text>
+          <Text style={[styles.label, { color: theme.colors.textSecondary }]}>Filter Color:</Text>
           <View style={styles.colorRow}>
             {colorsList.map((c) => (
               <TouchableOpacity
@@ -178,30 +265,55 @@ export default function PatientDetailScreen({ patient, onClose, onUpdated }) {
                   styles.colorButton,
                   {
                     backgroundColor: c.hex,
-                    borderColor: rightColor === c.name ? '#FFFFFF' : 'transparent',
+                    borderColor:
+                      rightColor === c.name
+                        ? theme.colors.text
+                        : theme.colors.iconContainerBorder,
                     borderWidth: rightColor === c.name ? 3 : 1,
                   },
                 ]}
               >
-                {rightColor === c.name && <Text style={styles.checkIcon}>✓</Text>}
+                {rightColor === c.name && (
+                  <CustomIcon
+                    library="Feather"
+                    name="check"
+                    size={14}
+                    color="#FFFFFF"
+                  />
+                )}
               </TouchableOpacity>
             ))}
           </View>
 
           <View style={styles.contrastRow}>
             <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
-              Contrast Intensity: <Text style={{ color: theme.colors.text, fontWeight: '700' }}>{rightContrast} / 255</Text>
+              Contrast:{' '}
+              <Text style={{ color: theme.colors.text, fontWeight: '700' }}>
+                {rightContrast} / 255
+              </Text>
             </Text>
             <View style={styles.stepButtons}>
               <TouchableOpacity
                 onPress={() => setRightContrast(Math.max(50, rightContrast - 25))}
-                style={[styles.stepBtn, { backgroundColor: theme.colors.surfaceElevated, borderColor: theme.colors.border }]}
+                style={[
+                  styles.stepBtn,
+                  {
+                    backgroundColor: theme.colors.iconContainerBg,
+                    borderColor: theme.colors.iconContainerBorder,
+                  },
+                ]}
               >
                 <Text style={[styles.stepText, { color: theme.colors.text }]}>- 25</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setRightContrast(Math.min(255, rightContrast + 25))}
-                style={[styles.stepBtn, { backgroundColor: theme.colors.surfaceElevated, borderColor: theme.colors.border }]}
+                style={[
+                  styles.stepBtn,
+                  {
+                    backgroundColor: theme.colors.iconContainerBg,
+                    borderColor: theme.colors.iconContainerBorder,
+                  },
+                ]}
               >
                 <Text style={[styles.stepText, { color: theme.colors.text }]}>+ 25</Text>
               </TouchableOpacity>
@@ -209,31 +321,50 @@ export default function PatientDetailScreen({ patient, onClose, onUpdated }) {
           </View>
         </View>
 
-        {/* Daily Prescribed Minutes */}
-        <View style={[styles.configCard, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}>
+        {/* Daily Regimen Target Time */}
+        <View
+          style={[
+            styles.configCard,
+            {
+              backgroundColor: theme.colors.cardBg,
+              borderColor: theme.colors.cardBorder,
+            },
+          ]}
+        >
           <Text style={[styles.configTitle, { color: theme.colors.text }]}>
-            Prescribed Daily Therapy Target
+            Prescribed Daily Regimen Target
           </Text>
-          <View style={styles.timePillsRow}>
+          <View style={styles.timeRow}>
             {timesList.map((t) => (
               <TouchableOpacity
                 key={t}
                 onPress={() => setGoalMinutes(t)}
                 style={[
-                  styles.timePill,
+                  styles.timeBtn,
                   {
-                    backgroundColor: goalMinutes === t ? theme.colors.primary : theme.colors.inputBg,
-                    borderColor: goalMinutes === t ? theme.colors.primary : theme.colors.border,
+                    backgroundColor:
+                      goalMinutes === t
+                        ? theme.colors.primary
+                        : theme.colors.iconContainerBg,
+                    borderColor:
+                      goalMinutes === t
+                        ? theme.colors.primary
+                        : theme.colors.iconContainerBorder,
                   },
                 ]}
               >
                 <Text
                   style={[
-                    styles.timePillText,
-                    { color: goalMinutes === t ? theme.colors.textInverted : theme.colors.text },
+                    styles.timeText,
+                    {
+                      color:
+                        goalMinutes === t
+                          ? theme.colors.textInverted
+                          : theme.colors.text,
+                    },
                   ]}
                 >
-                  {t} min
+                  {t}m
                 </Text>
               </TouchableOpacity>
             ))}
@@ -241,12 +372,15 @@ export default function PatientDetailScreen({ patient, onClose, onUpdated }) {
         </View>
 
         <Button
-          title="Save Prescribed Parameters"
-          icon="💾"
+          title="Save Clinical Prescription"
+          iconName="check"
+          iconLibrary="Feather"
           onPress={handleSave}
           loading={saving}
-          style={{ marginTop: 10 }}
+          style={{ marginTop: 6 }}
         />
+
+        <View style={{ height: 28 }} />
       </ScrollView>
     </View>
   );
@@ -257,8 +391,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   topBar: {
-    paddingTop: 16,
-    paddingBottom: 14,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 28) + 8 : 14,
+    paddingBottom: 12,
     paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -270,104 +404,95 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  topIcon: {
-    fontSize: 22,
+  iconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   topTitle: {
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '700',
   },
   topSub: {
     fontSize: 11,
   },
   closeBtn: {
     paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
     borderWidth: 1,
   },
   closeBtnText: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 40,
+    paddingBottom: 36,
   },
   previewCard: {
-    borderRadius: 18,
-    padding: 16,
+    borderRadius: 14,
     borderWidth: 1,
+    padding: 18,
     alignItems: 'center',
     marginBottom: 16,
   },
   previewHeader: {
-    fontSize: 10.5,
-    fontWeight: '800',
-    letterSpacing: 0.5,
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.8,
     marginBottom: 14,
   },
   fusionBox: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
     gap: 16,
-    marginVertical: 10,
+    marginBottom: 12,
   },
   fusionObject: {
-    width: 65,
-    height: 65,
-    borderRadius: 14,
+    width: 80,
+    height: 50,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
   },
   fusionLabel: {
     color: '#FFFFFF',
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: 12,
+    fontWeight: '700',
   },
   previewHint: {
-    fontSize: 11,
+    fontSize: 12,
     textAlign: 'center',
-    marginTop: 10,
   },
   configCard: {
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 14,
     borderWidth: 1,
-    marginBottom: 14,
+    padding: 14,
+    marginBottom: 12,
   },
   configTitle: {
     fontSize: 14,
-    fontWeight: '800',
+    fontWeight: '700',
     marginBottom: 10,
   },
   label: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 13,
     marginBottom: 8,
   },
   colorRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginBottom: 14,
+    gap: 10,
+    marginBottom: 12,
   },
   colorButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  checkIcon: {
-    color: '#FFFFFF',
-    fontWeight: '900',
-    fontSize: 16,
   },
   contrastRow: {
     flexDirection: 'row',
@@ -379,30 +504,29 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   stepBtn: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
     borderWidth: 1,
   },
   stepText: {
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: 12,
+    fontWeight: '600',
   },
-  timePillsRow: {
+  timeRow: {
     flexDirection: 'row',
     gap: 8,
-    marginTop: 4,
   },
-  timePill: {
+  timeBtn: {
     flex: 1,
-    paddingVertical: 10,
-    borderRadius: 10,
+    height: 38,
+    borderRadius: 8,
     borderWidth: 1,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  timePillText: {
-    fontSize: 12,
-    fontWeight: '700',
+  timeText: {
+    fontSize: 13,
+    fontWeight: '600',
   },
 });
-

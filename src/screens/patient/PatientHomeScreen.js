@@ -1,16 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import HeaderBar from '../../components/HeaderBar';
+import CustomIcon from '../../components/CustomIcon';
+import { GAMES } from '../../services/games';
+
+import realDataService from '../../services/realDataService';
 
 export default function PatientHomeScreen({
+  onLaunchGame,
   onLaunchTetris,
   onLaunchSnake,
   onLaunchCalibration,
@@ -18,53 +24,92 @@ export default function PatientHomeScreen({
   onOpenThemeModal,
   onOpenProfile,
 }) {
-  const { theme } = useTheme();
+  const { theme, useWebGames, toggleUseWebGames } = useTheme();
   const { currentUser } = useAuth();
 
-  const dailyGoal = Number(currentUser?.user_playing_time || 20);
-  const minutesCompleted = 14; // Today's completed therapy minutes
-  const progressPercent = Math.min(100, Math.round((minutesCompleted / dailyGoal) * 100));
+  const stats = realDataService.getUserStats(currentUser);
+  const dailyGoal = stats.dailyGoalMinutes;
+  const minutesCompleted = stats.minutesCompletedToday;
+  const progressPercent = stats.progressPercent;
 
-  const leftColorHex = currentUser?.left_eye_contrast_color || '#FF0033';
-  const rightColorHex = currentUser?.right_eye_contrast_color || '#00E5FF';
+  const leftColorHex = currentUser?.left_eye_contrast_color || '#EF4444';
+  const rightColorHex = currentUser?.right_eye_contrast_color || '#0284C7';
+  const firstName = currentUser?.fullname?.split(' ')[0] || 'Friend';
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <HeaderBar
-        title="Vision Therapy"
-        subtitle={`Welcome, ${currentUser?.fullname?.split(' ')[0] || 'Patient'}`}
+        title="LazyEye Therapy"
+        subtitle={firstName}
         onThemePress={onOpenThemeModal}
         onProfilePress={onOpenProfile}
       />
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Daily Progress Goal Card */}
-        <View style={[styles.progressCard, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}>
-          <View style={styles.progressTop}>
-            <View>
-              <Text style={[styles.progressTag, { color: theme.colors.textMuted }]}>
-                TODAY'S THERAPY REGIMEN
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Warm Greeting Section */}
+        <View style={styles.greetingSection}>
+          <Text style={[styles.greetingTitle, { color: theme.colors.text }]}>
+            Good day, {firstName}
+          </Text>
+          <Text style={[styles.greetingSubtitle, { color: theme.colors.textSecondary }]}>
+            Ready for today's visual training session?
+          </Text>
+        </View>
+
+        {/* ONE CLEAR PRIMARY ACTION: Daily Regimen Card */}
+        <View
+          style={[
+            styles.primaryActionCard,
+            {
+              backgroundColor: theme.colors.cardBg,
+              borderColor: theme.colors.cardBorder,
+            },
+          ]}
+        >
+          <View style={styles.primaryTopRow}>
+            <View style={styles.goalInfo}>
+              <Text style={[styles.goalLabel, { color: theme.colors.textMuted }]}>
+                TODAY'S PROGRESS
               </Text>
-              <Text style={[styles.progressValue, { color: theme.colors.text }]}>
+              <Text style={[styles.goalTime, { color: theme.colors.text }]}>
                 {minutesCompleted} / {dailyGoal} mins
               </Text>
-              <Text style={[styles.progressStatus, { color: theme.colors.primary }]}>
-                {progressPercent}% prescribed goal reached
+              <Text style={[styles.goalStatus, { color: theme.colors.primary }]}>
+                {progressPercent}% of prescribed goal
               </Text>
             </View>
 
-            <View style={[styles.goalCircle, { borderColor: theme.colors.primary, backgroundColor: `${theme.colors.primary}18` }]}>
-              <Text style={[styles.circlePercent, { color: theme.colors.primary }]}>
-                {progressPercent}%
-              </Text>
+            <View
+              style={[
+                styles.iconContainer,
+                {
+                  backgroundColor: theme.colors.iconContainerBg,
+                  borderColor: theme.colors.iconContainerBorder,
+                },
+              ]}
+            >
+              <CustomIcon
+                library="Feather"
+                name="clock"
+                size={22}
+                color={theme.colors.primary}
+              />
             </View>
           </View>
 
-          {/* Progress Bar Track */}
-          <View style={[styles.trackBg, { backgroundColor: theme.colors.surfaceHighlight }]}>
+          {/* Simple Progress Bar */}
+          <View
+            style={[
+              styles.progressBarBg,
+              { backgroundColor: theme.colors.surfaceHighlight },
+            ]}
+          >
             <View
               style={[
-                styles.trackFill,
+                styles.progressBarFill,
                 {
                   width: `${progressPercent}%`,
                   backgroundColor: theme.colors.primary,
@@ -72,134 +117,243 @@ export default function PatientHomeScreen({
               ]}
             />
           </View>
+
+          {/* Clear Primary Action Button */}
+          <TouchableOpacity
+            onPress={() => onLaunchGame ? onLaunchGame(GAMES[0]) : onLaunchTetris()}
+            activeOpacity={0.85}
+            style={[
+              styles.primaryButton,
+              {
+                backgroundColor: theme.colors.primary,
+                borderColor: theme.colors.buttonBorder,
+              },
+            ]}
+            accessible={true}
+            accessibilityLabel="Start today's session with prescribed game"
+          >
+            <CustomIcon
+              library="Feather"
+              name="play"
+              size={18}
+              color={theme.colors.textInverted}
+            />
+            <Text style={[styles.primaryButtonText, { color: theme.colors.textInverted }]}>
+              Start Daily Session
+            </Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Anaglyph 3D Glasses Status */}
-        <View style={[styles.glassesCard, { backgroundColor: '#070A14', borderColor: theme.colors.border }]}>
-          <View style={styles.glassesHeader}>
-            <Text style={styles.glassesEmoji}>🕶️</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.glassesTitle, { color: '#FFFFFF' }]}>
-                Anaglyph Dichoptic Lens Setup
-              </Text>
-              <Text style={[styles.glassesSub, { color: theme.colors.textSecondary }]}>
-                Put on your Red-Cyan glasses before starting games
-              </Text>
+        {/* Dichoptic Glasses Notice Card */}
+        <View
+          style={[
+            styles.glassesCard,
+            {
+              backgroundColor: theme.colors.cardBg,
+              borderColor: theme.colors.cardBorder,
+            },
+          ]}
+        >
+          <View
+            style={[
+              styles.iconContainer,
+              {
+                backgroundColor: theme.colors.iconContainerBg,
+                borderColor: theme.colors.iconContainerBorder,
+              },
+            ]}
+          >
+            <CustomIcon
+              library="Ionicons"
+              name="glasses-outline"
+              size={22}
+              color={theme.colors.text}
+            />
+          </View>
+
+          <View style={styles.glassesContent}>
+            <Text style={[styles.glassesTitle, { color: theme.colors.text }]}>
+              Red-Cyan Glasses
+            </Text>
+            <View style={styles.lensTagsRow}>
+              <View style={styles.lensTag}>
+                <View style={[styles.lensDot, { backgroundColor: leftColorHex }]} />
+                <Text style={[styles.lensLabel, { color: theme.colors.textSecondary }]}>
+                  Left Eye
+                </Text>
+              </View>
+              <Text style={[styles.lensDivider, { color: theme.colors.borderLight }]}>•</Text>
+              <View style={styles.lensTag}>
+                <View style={[styles.lensDot, { backgroundColor: rightColorHex }]} />
+                <Text style={[styles.lensLabel, { color: theme.colors.textSecondary }]}>
+                  Right Eye
+                </Text>
+              </View>
             </View>
-            <TouchableOpacity
-              onPress={onLaunchCalibration}
-              style={[styles.calibBtn, { backgroundColor: theme.colors.surfaceElevated, borderColor: theme.colors.border }]}
+          </View>
+
+          <TouchableOpacity
+            onPress={onLaunchCalibration}
+            style={[
+              styles.adjustButton,
+              {
+                backgroundColor: theme.colors.iconContainerBg,
+                borderColor: theme.colors.iconContainerBorder,
+              },
+            ]}
+            accessible={true}
+            accessibilityLabel="Adjust lens calibration"
+          >
+            <Text style={[styles.adjustButtonText, { color: theme.colors.text }]}>
+              Calibrate
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Prescribed Therapy Games Section */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={[styles.sectionHeading, { color: theme.colors.text }]}>
+            Prescribed Games
+          </Text>
+          <View
+            style={[
+              styles.countPill,
+              {
+                backgroundColor: theme.colors.iconContainerBg,
+                borderColor: theme.colors.iconContainerBorder,
+              },
+            ]}
+          >
+            <Text style={[styles.countPillText, { color: theme.colors.primary }]}>
+              {GAMES.length} Clinical Engines
+            </Text>
+          </View>
+        </View>
+
+        {GAMES.map((game) => (
+          <TouchableOpacity
+            key={game.id}
+            onPress={() => onLaunchGame ? onLaunchGame(game) : onLaunchTetris()}
+            activeOpacity={0.8}
+            style={[
+              styles.featureCard,
+              {
+                backgroundColor: theme.colors.cardBg,
+                borderColor: theme.colors.cardBorder,
+              },
+            ]}
+          >
+            {/* Proper Game Image Icon */}
+            <View
+              style={[
+                styles.gameImageContainer,
+                {
+                  backgroundColor: theme.colors.iconContainerBg,
+                  borderColor: theme.colors.iconContainerBorder,
+                },
+              ]}
             >
-              <Text style={[styles.calibBtnText, { color: theme.colors.text }]}>Adjust</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.lensesRow}>
-            <View style={[styles.lensIndicator, { borderColor: leftColorHex }]}>
-              <View style={[styles.lensColorDot, { backgroundColor: leftColorHex }]} />
-              <Text style={styles.lensText}>Left Eye: {currentUser?.left_eye_color || 'Red'}</Text>
+              <Image
+                source={game.image}
+                style={styles.gameImage}
+                resizeMode="contain"
+              />
             </View>
 
-            <View style={[styles.lensIndicator, { borderColor: rightColorHex }]}>
-              <View style={[styles.lensColorDot, { backgroundColor: rightColorHex }]} />
-              <Text style={styles.lensText}>Right Eye: {currentUser?.right_eye_color || 'Blue/Cyan'}</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Supervising Doctor's Evaluation Card */}
-        <View style={[styles.doctorCard, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}>
-          <View style={styles.docHead}>
-            <Text style={styles.docEmoji}>🩺</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.docName, { color: theme.colors.text }]}>
-                Supervised by {currentUser?.doctor_name || 'Dr. Sarah Mitchell, OD'}
-              </Text>
-              <Text style={[styles.docRemark, { color: theme.colors.textSecondary }]}>
-                "Continue Snake & Tetris fusion therapy to reduce amblyopic suppression."
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Clinical Games Section */}
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-          Playable Dichoptic Therapy Games
-        </Text>
-
-        {/* Game Card 1: Tetris */}
-        <TouchableOpacity
-          onPress={onLaunchTetris}
-          activeOpacity={0.85}
-          style={[styles.gameCard, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.primary }]}
-        >
-          <View style={styles.gameTopRow}>
-            <View style={[styles.gameIconBox, { backgroundColor: `${theme.colors.accentRed}22` }]}>
-              <Text style={styles.gameEmoji}>🕹️</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <View style={styles.gameBadgeRow}>
-                <Text style={[styles.gameTitle, { color: theme.colors.text }]}>Dichoptic Tetris</Text>
-                <View style={[styles.livePill, { backgroundColor: `${theme.colors.success}18` }]}>
-                  <Text style={[styles.liveText, { color: theme.colors.success }]}>Playable</Text>
-                </View>
+            <View style={styles.featureDetails}>
+              <View style={styles.featureHeaderRow}>
+                <Text style={[styles.featureTitle, { color: theme.colors.text }]} numberOfLines={1}>
+                  {game.title}
+                </Text>
+                <Text style={[styles.featureDuration, { color: theme.colors.textMuted }]}>
+                  {game.duration} mins
+                </Text>
               </View>
-              <Text style={[styles.gameDesc, { color: theme.colors.textSecondary }]}>
-                Falling shapes visible to Left Eye • Fixed grid visible to Right Eye
+              <Text style={[styles.featureCategory, { color: theme.colors.primary }]}>
+                {game.category}
+              </Text>
+              <Text style={[styles.featureDescription, { color: theme.colors.textSecondary }]} numberOfLines={2}>
+                {game.description}
               </Text>
             </View>
-          </View>
 
-          <View style={[styles.gameFooter, { borderTopColor: theme.colors.borderLight }]}>
-            <Text style={[styles.gameMeta, { color: theme.colors.textMuted }]}>
-              Dichoptic Amblyopia Fusion • 20 mins
-            </Text>
-            <Text style={[styles.playLink, { color: theme.colors.primary }]}>Start Therapy ➔</Text>
-          </View>
-        </TouchableOpacity>
-
-        {/* Game Card 2: Snake */}
-        <TouchableOpacity
-          onPress={onLaunchSnake}
-          activeOpacity={0.85}
-          style={[styles.gameCard, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}
-        >
-          <View style={styles.gameTopRow}>
-            <View style={[styles.gameIconBox, { backgroundColor: `${theme.colors.info}22` }]}>
-              <Text style={styles.gameEmoji}>🐍</Text>
+            <View
+              style={[
+                styles.arrowContainer,
+                {
+                  backgroundColor: theme.colors.iconContainerBg,
+                  borderColor: theme.colors.iconContainerBorder,
+                },
+              ]}
+            >
+              <CustomIcon
+                library="Feather"
+                name="chevron-right"
+                size={18}
+                color={theme.colors.textSecondary}
+              />
             </View>
-            <View style={{ flex: 1 }}>
-              <View style={styles.gameBadgeRow}>
-                <Text style={[styles.gameTitle, { color: theme.colors.text }]}>Dichoptic Snake</Text>
-                <View style={[styles.livePill, { backgroundColor: `${theme.colors.success}18` }]}>
-                  <Text style={[styles.liveText, { color: theme.colors.success }]}>Playable</Text>
-                </View>
-              </View>
-              <Text style={[styles.gameDesc, { color: theme.colors.textSecondary }]}>
-                Snake body in Left Eye • Target apples in Right Eye
-              </Text>
-            </View>
-          </View>
+          </TouchableOpacity>
+        ))}
 
-          <View style={[styles.gameFooter, { borderTopColor: theme.colors.borderLight }]}>
-            <Text style={[styles.gameMeta, { color: theme.colors.textMuted }]}>
-              Binocular Motor Coordination • 15 mins
-            </Text>
-            <Text style={[styles.playLink, { color: theme.colors.primary }]}>Start Therapy ➔</Text>
-          </View>
-        </TouchableOpacity>
-
-        {/* History Button */}
+        {/* Feature Item 3: Session Logs & History */}
         <TouchableOpacity
           onPress={onOpenHistory}
-          style={[styles.historyRow, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+          activeOpacity={0.8}
+          style={[
+            styles.featureCard,
+            {
+              backgroundColor: theme.colors.cardBg,
+              borderColor: theme.colors.cardBorder,
+            },
+          ]}
         >
-          <Text style={styles.histIcon}>📜</Text>
-          <Text style={[styles.histTitle, { color: theme.colors.text }]}>
-            View My Past Session Logs & Scores
-          </Text>
-          <Text style={[styles.histArrow, { color: theme.colors.textSecondary }]}>➔</Text>
+          <View
+            style={[
+              styles.iconContainerLarge,
+              {
+                backgroundColor: theme.colors.iconContainerBg,
+                borderColor: theme.colors.iconContainerBorder,
+              },
+            ]}
+          >
+            <CustomIcon
+              library="Feather"
+              name="activity"
+              size={22}
+              color={theme.colors.success}
+            />
+          </View>
+
+          <View style={styles.featureDetails}>
+            <Text style={[styles.featureTitle, { color: theme.colors.text }]}>
+              Therapy History
+            </Text>
+            <Text style={[styles.featureDescription, { color: theme.colors.textSecondary }]}>
+              Review completed sessions, scores and doctor notes
+            </Text>
+          </View>
+
+          <View
+            style={[
+              styles.arrowContainer,
+              {
+                backgroundColor: theme.colors.iconContainerBg,
+                borderColor: theme.colors.iconContainerBorder,
+              },
+            ]}
+          >
+            <CustomIcon
+              library="Feather"
+              name="chevron-right"
+              size={18}
+              color={theme.colors.textSecondary}
+            />
+          </View>
         </TouchableOpacity>
+
+        {/* Floating Custom Bottom Tab Bar Clearance */}
+        <View style={{ height: 96 }} />
       </ScrollView>
     </View>
   );
@@ -210,220 +364,216 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: 16,
-    paddingBottom: 40,
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
-  progressCard: {
-    borderRadius: 18,
-    padding: 18,
-    borderWidth: 1,
+  greetingSection: {
     marginBottom: 16,
   },
-  progressTop: {
+  greetingTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    letterSpacing: -0.3,
+  },
+  greetingSubtitle: {
+    fontSize: 14,
+    marginTop: 3,
+    fontWeight: '400',
+  },
+  primaryActionCard: {
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 18,
+    marginBottom: 16,
+  },
+  primaryTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 14,
   },
-  progressTag: {
-    fontSize: 10.5,
-    fontWeight: '800',
+  goalInfo: {
+    flex: 1,
+  },
+  goalLabel: {
+    fontSize: 11,
+    fontWeight: '600',
     letterSpacing: 0.5,
+    marginBottom: 4,
   },
-  progressValue: {
-    fontSize: 22,
-    fontWeight: '900',
-    marginTop: 3,
+  goalTime: {
+    fontSize: 20,
+    fontWeight: '700',
   },
-  progressStatus: {
-    fontSize: 12,
+  goalStatus: {
+    fontSize: 13,
     fontWeight: '600',
     marginTop: 2,
   },
-  goalCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    borderWidth: 3,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  circlePercent: {
-    fontSize: 15,
-    fontWeight: '800',
-  },
-  trackBg: {
+  progressBarBg: {
     height: 8,
     borderRadius: 4,
     overflow: 'hidden',
+    marginBottom: 16,
   },
-  trackFill: {
+  progressBarFill: {
     height: '100%',
     borderRadius: 4,
   },
-  glassesCard: {
-    borderRadius: 18,
-    padding: 16,
-    borderWidth: 1,
-    marginBottom: 16,
-  },
-  glassesHeader: {
+  primaryButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    marginBottom: 12,
+    justifyContent: 'center',
+    height: 48,
+    borderRadius: 12,
+    borderWidth: 1,
+    gap: 8,
   },
-  glassesEmoji: {
-    fontSize: 26,
+  primaryButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  glassesCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 14,
+    marginBottom: 20,
+  },
+  glassesContent: {
+    flex: 1,
+    marginLeft: 12,
   },
   glassesTitle: {
     fontSize: 14,
-    fontWeight: '800',
+    fontWeight: '600',
   },
-  glassesSub: {
-    fontSize: 11,
-    marginTop: 2,
+  lensTagsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+    gap: 6,
   },
-  calibBtn: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+  lensTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  lensDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  lensLabel: {
+    fontSize: 12,
+  },
+  lensDivider: {
+    fontSize: 10,
+  },
+  adjustButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
     borderRadius: 8,
     borderWidth: 1,
   },
-  calibBtnText: {
-    fontSize: 11,
+  adjustButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  sectionHeading: {
+    fontSize: 16,
     fontWeight: '700',
-  },
-  lensesRow: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  lensIndicator: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 8,
-    borderRadius: 10,
-    borderWidth: 1.5,
-    gap: 6,
-  },
-  lensColorDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-  lensText: {
-    color: '#FFFFFF',
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  doctorCard: {
-    borderRadius: 16,
-    padding: 14,
-    borderWidth: 1,
-    marginBottom: 20,
-  },
-  docHead: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  docEmoji: {
-    fontSize: 22,
-  },
-  docName: {
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  docRemark: {
-    fontSize: 11.5,
-    fontStyle: 'italic',
-    marginTop: 3,
-    lineHeight: 16,
-  },
-  sectionTitle: {
-    fontSize: 15,
-    fontWeight: '800',
     marginBottom: 12,
+    letterSpacing: 0.1,
   },
-  gameCard: {
-    borderRadius: 18,
-    padding: 16,
-    borderWidth: 1.5,
-    marginBottom: 14,
-  },
-  gameTopRow: {
+  featureCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    marginBottom: 12,
-  },
-  gameIconBox: {
-    width: 48,
-    height: 48,
     borderRadius: 14,
+    borderWidth: 1,
+    padding: 14,
+    marginBottom: 12,
+  },
+  iconContainer: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  gameEmoji: {
-    fontSize: 24,
+  iconContainerLarge: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  gameBadgeRow: {
+  featureDetails: {
+    flex: 1,
+    marginHorizontal: 14,
+  },
+  featureHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: 2,
   },
-  gameTitle: {
-    fontSize: 16,
-    fontWeight: '800',
+  featureTitle: {
+    fontSize: 15,
+    fontWeight: '600',
   },
-  livePill: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  liveText: {
-    fontSize: 10,
-    fontWeight: '700',
-  },
-  gameDesc: {
+  featureDuration: {
     fontSize: 12,
-    marginTop: 3,
+    fontWeight: '500',
+  },
+  featureDescription: {
+    fontSize: 12,
     lineHeight: 16,
   },
-  gameFooter: {
+  arrowContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sectionHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderTopWidth: 1,
-    paddingTop: 10,
+    marginBottom: 12,
   },
-  gameMeta: {
+  countPill: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  countPillText: {
     fontSize: 11,
+    fontWeight: '700',
   },
-  playLink: {
-    fontSize: 12,
-    fontWeight: '800',
-  },
-  historyRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 14,
+  gameImageContainer: {
+    width: 48,
+    height: 48,
     borderRadius: 14,
     borderWidth: 1,
-    marginTop: 4,
-    gap: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    padding: 4,
   },
-  histIcon: {
-    fontSize: 18,
+  gameImage: {
+    width: '100%',
+    height: '100%',
   },
-  histTitle: {
-    fontSize: 13,
+  featureCategory: {
+    fontSize: 11,
     fontWeight: '700',
-    flex: 1,
-  },
-  histArrow: {
-    fontSize: 14,
+    marginBottom: 3,
   },
 });
-

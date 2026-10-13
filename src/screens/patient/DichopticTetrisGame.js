@@ -11,6 +11,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { api } from '../../services/api';
+import CustomIcon from '../../components/CustomIcon';
 
 const COLS = 10;
 const ROWS = 16;
@@ -232,8 +233,9 @@ export default function DichopticTetrisGame({ onClose }) {
           </Text>
         </View>
 
-        <TouchableOpacity onPress={handleExit} style={styles.exitBtn}>
-          <Text style={styles.exitBtnText}>✕ Exit</Text>
+        <TouchableOpacity onPress={handleExit} style={styles.exitBtn} accessible={true} accessibilityLabel="Exit tetris game">
+          <CustomIcon library="Feather" name="x" size={13} color="#FFFFFF" style={{ marginRight: 4 }} />
+          <Text style={styles.exitBtnText}>Exit</Text>
         </TouchableOpacity>
       </View>
 
@@ -321,17 +323,17 @@ export default function DichopticTetrisGame({ onClose }) {
 
       {/* On-Screen Touch Controls */}
       <View style={styles.controlsBar}>
-        <TouchableOpacity onPress={moveLeft} style={styles.ctrlBtn}>
-          <Text style={styles.ctrlIcon}>⬅️</Text>
+        <TouchableOpacity onPress={moveLeft} style={styles.ctrlBtn} accessible={true} accessibilityLabel="Move left">
+          <CustomIcon library="Feather" name="arrow-left" size={22} color="#38BDF8" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={rotatePiece} style={[styles.ctrlBtn, styles.ctrlRotate]}>
-          <Text style={styles.ctrlIcon}>🔄</Text>
+        <TouchableOpacity onPress={rotatePiece} style={[styles.ctrlBtn, styles.ctrlRotate]} accessible={true} accessibilityLabel="Rotate shape">
+          <CustomIcon library="Feather" name="rotate-cw" size={22} color="#00E5FF" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={dropFast} style={[styles.ctrlBtn, styles.ctrlDrop]}>
-          <Text style={styles.ctrlIcon}>⬇️</Text>
+        <TouchableOpacity onPress={dropFast} style={[styles.ctrlBtn, styles.ctrlDrop]} accessible={true} accessibilityLabel="Drop shape fast">
+          <CustomIcon library="Feather" name="arrow-down" size={22} color="#FF0055" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={moveRight} style={styles.ctrlBtn}>
-          <Text style={styles.ctrlIcon}>➡️</Text>
+        <TouchableOpacity onPress={moveRight} style={styles.ctrlBtn} accessible={true} accessibilityLabel="Move right">
+          <CustomIcon library="Feather" name="arrow-right" size={22} color="#38BDF8" />
         </TouchableOpacity>
       </View>
     </View>
@@ -342,6 +344,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 28) + 12 : 18,
+    paddingBottom: Platform.OS === 'android' ? 26 : 14,
     paddingHorizontal: 12,
   },
   topBar: {
@@ -361,6 +364,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   exitBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,

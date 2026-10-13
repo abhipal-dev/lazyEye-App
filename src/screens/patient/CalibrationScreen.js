@@ -13,6 +13,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { api } from '../../services/api';
 import Button from '../../components/Button';
+import CustomIcon from '../../components/CustomIcon';
 
 export default function CalibrationScreen({ onClose }) {
   const { theme } = useTheme();
@@ -25,17 +26,17 @@ export default function CalibrationScreen({ onClose }) {
   const [saving, setSaving] = useState(false);
 
   const colors = [
-    { name: 'red', hex: '#FF0033' },
-    { name: 'blue', hex: '#0066FF' },
-    { name: 'green', hex: '#00CC66' },
+    { name: 'red', hex: '#EF4444' },
+    { name: 'blue', hex: '#0284C7' },
+    { name: 'green', hex: '#10B981' },
     { name: 'cyan', hex: '#00E5FF' },
   ];
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const leftHex = colors.find((c) => c.name === leftColor)?.hex || '#FF0033';
-      const rightHex = colors.find((c) => c.name === rightColor)?.hex || '#0066FF';
+      const leftHex = colors.find((c) => c.name === leftColor)?.hex || '#EF4444';
+      const rightHex = colors.find((c) => c.name === rightColor)?.hex || '#0284C7';
 
       await api.updateCalibration(currentUser.id, {
         left_eye_color: leftColor,
@@ -66,25 +67,71 @@ export default function CalibrationScreen({ onClose }) {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <View style={[styles.topBar, { backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.border }]}>
+      <View
+        style={[
+          styles.topBar,
+          {
+            backgroundColor: theme.colors.surface,
+            borderBottomColor: theme.colors.border,
+          },
+        ]}
+      >
         <View style={styles.topBarLeft}>
-          <Text style={styles.topIcon}>🕶️</Text>
+          <View
+            style={[
+              styles.iconBox,
+              {
+                backgroundColor: theme.colors.iconContainerBg,
+                borderColor: theme.colors.iconContainerBorder,
+              },
+            ]}
+          >
+            <CustomIcon
+              library="Ionicons"
+              name="glasses-outline"
+              size={18}
+              color={theme.colors.text}
+            />
+          </View>
           <View>
-            <Text style={[styles.topTitle, { color: theme.colors.text }]}>Patient Anaglyph Calibration</Text>
-            <Text style={[styles.topSub, { color: theme.colors.textSecondary }]}>Fine-tune 3D glasses contrast</Text>
+            <Text style={[styles.topTitle, { color: theme.colors.text }]}>
+              Lens Calibration
+            </Text>
+            <Text style={[styles.topSub, { color: theme.colors.textSecondary }]}>
+              Anaglyph Dichoptic Separation
+            </Text>
           </View>
         </View>
 
-        <TouchableOpacity onPress={onClose} style={[styles.closeBtn, { backgroundColor: theme.colors.inputBg, borderColor: theme.colors.border }]}>
+        <TouchableOpacity
+          onPress={onClose}
+          style={[
+            styles.closeBtn,
+            {
+              backgroundColor: theme.colors.iconContainerBg,
+              borderColor: theme.colors.iconContainerBorder,
+            },
+          ]}
+          accessible={true}
+          accessibilityLabel="Back to Home"
+        >
           <Text style={[styles.closeBtnText, { color: theme.colors.text }]}>Back</Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Visual Fusion Calibration Target */}
-        <View style={[styles.fusionTargetBox, { backgroundColor: '#05070D', borderColor: theme.colors.border }]}>
-          <Text style={[styles.targetHeader, { color: theme.colors.textMuted }]}>
-            BINOCULAR SUPPRESSION TEST
+        <View
+          style={[
+            styles.fusionTargetBox,
+            {
+              backgroundColor: '#05070D',
+              borderColor: theme.colors.cardBorder,
+            },
+          ]}
+        >
+          <Text style={[styles.targetHeader, { color: '#94A3B8' }]}>
+            BINOCULAR SUPPRESSION TARGET
           </Text>
 
           <View style={styles.dualShapes}>
@@ -92,7 +139,7 @@ export default function CalibrationScreen({ onClose }) {
               style={[
                 styles.targetSquare,
                 {
-                  backgroundColor: colors.find((c) => c.name === leftColor)?.hex || '#FF0033',
+                  backgroundColor: colors.find((c) => c.name === leftColor)?.hex || '#EF4444',
                   opacity: leftContrast / 255,
                 },
               ]}
@@ -104,7 +151,7 @@ export default function CalibrationScreen({ onClose }) {
               style={[
                 styles.targetSquare,
                 {
-                  backgroundColor: colors.find((c) => c.name === rightColor)?.hex || '#0066FF',
+                  backgroundColor: colors.find((c) => c.name === rightColor)?.hex || '#0284C7',
                   opacity: rightContrast / 255,
                 },
               ]}
@@ -113,14 +160,24 @@ export default function CalibrationScreen({ onClose }) {
             </View>
           </View>
 
-          <Text style={[styles.targetHint, { color: theme.colors.textSecondary }]}>
-            With glasses on, adjust contrast until both letters 'L' and 'R' appear equally bright without suppression.
+          <Text style={[styles.targetHint, { color: '#94A3B8' }]}>
+            With Red-Cyan glasses on, calibrate until both letters appear equally clear.
           </Text>
         </View>
 
         {/* Left Lens Controls */}
-        <View style={[styles.card, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}>
-          <Text style={[styles.cardTitle, { color: theme.colors.text }]}>Left Lens (OS)</Text>
+        <View
+          style={[
+            styles.card,
+            {
+              backgroundColor: theme.colors.cardBg,
+              borderColor: theme.colors.cardBorder,
+            },
+          ]}
+        >
+          <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
+            Left Eye Filter (OS)
+          </Text>
           <View style={styles.colorRow}>
             {colors.map((c) => (
               <TouchableOpacity
@@ -131,7 +188,10 @@ export default function CalibrationScreen({ onClose }) {
                   {
                     backgroundColor: c.hex,
                     borderWidth: leftColor === c.name ? 3 : 1,
-                    borderColor: leftColor === c.name ? '#FFFFFF' : 'transparent',
+                    borderColor:
+                      leftColor === c.name
+                        ? theme.colors.text
+                        : theme.colors.iconContainerBorder,
                   },
                 ]}
               />
@@ -140,18 +200,33 @@ export default function CalibrationScreen({ onClose }) {
 
           <View style={styles.sliderRow}>
             <Text style={[styles.contrastText, { color: theme.colors.textSecondary }]}>
-              Contrast: <Text style={{ color: theme.colors.text, fontWeight: '700' }}>{leftContrast}</Text>
+              Intensity:{' '}
+              <Text style={{ color: theme.colors.text, fontWeight: '700' }}>
+                {leftContrast}
+              </Text>
             </Text>
             <View style={styles.btnRow}>
               <TouchableOpacity
                 onPress={() => setLeftContrast(Math.max(50, leftContrast - 20))}
-                style={[styles.adjustBtn, { backgroundColor: theme.colors.surfaceElevated, borderColor: theme.colors.border }]}
+                style={[
+                  styles.adjustBtn,
+                  {
+                    backgroundColor: theme.colors.iconContainerBg,
+                    borderColor: theme.colors.iconContainerBorder,
+                  },
+                ]}
               >
                 <Text style={[styles.adjustText, { color: theme.colors.text }]}>- 20</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setLeftContrast(Math.min(255, leftContrast + 20))}
-                style={[styles.adjustBtn, { backgroundColor: theme.colors.surfaceElevated, borderColor: theme.colors.border }]}
+                style={[
+                  styles.adjustBtn,
+                  {
+                    backgroundColor: theme.colors.iconContainerBg,
+                    borderColor: theme.colors.iconContainerBorder,
+                  },
+                ]}
               >
                 <Text style={[styles.adjustText, { color: theme.colors.text }]}>+ 20</Text>
               </TouchableOpacity>
@@ -160,8 +235,18 @@ export default function CalibrationScreen({ onClose }) {
         </View>
 
         {/* Right Lens Controls */}
-        <View style={[styles.card, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}>
-          <Text style={[styles.cardTitle, { color: theme.colors.text }]}>Right Lens (OD)</Text>
+        <View
+          style={[
+            styles.card,
+            {
+              backgroundColor: theme.colors.cardBg,
+              borderColor: theme.colors.cardBorder,
+            },
+          ]}
+        >
+          <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
+            Right Eye Filter (OD)
+          </Text>
           <View style={styles.colorRow}>
             {colors.map((c) => (
               <TouchableOpacity
@@ -172,7 +257,10 @@ export default function CalibrationScreen({ onClose }) {
                   {
                     backgroundColor: c.hex,
                     borderWidth: rightColor === c.name ? 3 : 1,
-                    borderColor: rightColor === c.name ? '#FFFFFF' : 'transparent',
+                    borderColor:
+                      rightColor === c.name
+                        ? theme.colors.text
+                        : theme.colors.iconContainerBorder,
                   },
                 ]}
               />
@@ -181,18 +269,33 @@ export default function CalibrationScreen({ onClose }) {
 
           <View style={styles.sliderRow}>
             <Text style={[styles.contrastText, { color: theme.colors.textSecondary }]}>
-              Contrast: <Text style={{ color: theme.colors.text, fontWeight: '700' }}>{rightContrast}</Text>
+              Intensity:{' '}
+              <Text style={{ color: theme.colors.text, fontWeight: '700' }}>
+                {rightContrast}
+              </Text>
             </Text>
             <View style={styles.btnRow}>
               <TouchableOpacity
                 onPress={() => setRightContrast(Math.max(50, rightContrast - 20))}
-                style={[styles.adjustBtn, { backgroundColor: theme.colors.surfaceElevated, borderColor: theme.colors.border }]}
+                style={[
+                  styles.adjustBtn,
+                  {
+                    backgroundColor: theme.colors.iconContainerBg,
+                    borderColor: theme.colors.iconContainerBorder,
+                  },
+                ]}
               >
                 <Text style={[styles.adjustText, { color: theme.colors.text }]}>- 20</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setRightContrast(Math.min(255, rightContrast + 20))}
-                style={[styles.adjustBtn, { backgroundColor: theme.colors.surfaceElevated, borderColor: theme.colors.border }]}
+                style={[
+                  styles.adjustBtn,
+                  {
+                    backgroundColor: theme.colors.iconContainerBg,
+                    borderColor: theme.colors.iconContainerBorder,
+                  },
+                ]}
               >
                 <Text style={[styles.adjustText, { color: theme.colors.text }]}>+ 20</Text>
               </TouchableOpacity>
@@ -201,12 +304,15 @@ export default function CalibrationScreen({ onClose }) {
         </View>
 
         <Button
-          title="Save Lens Settings"
-          icon="✅"
+          title="Save Calibration"
+          iconName="check"
+          iconLibrary="Feather"
           onPress={handleSave}
           loading={saving}
-          style={{ marginTop: 10 }}
+          style={{ marginTop: 8 }}
         />
+
+        <View style={{ height: 28 }} />
       </ScrollView>
     </View>
   );
@@ -217,8 +323,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   topBar: {
-    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 28) + 12 : 16,
-    paddingBottom: 14,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 28) + 8 : 14,
+    paddingBottom: 12,
     paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -230,86 +336,90 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  topIcon: {
-    fontSize: 22,
+  iconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   topTitle: {
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '700',
   },
   topSub: {
     fontSize: 11,
   },
   closeBtn: {
     paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
     borderWidth: 1,
   },
   closeBtnText: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 40,
+    paddingBottom: 36,
   },
   fusionTargetBox: {
-    borderRadius: 18,
-    padding: 18,
+    borderRadius: 14,
     borderWidth: 1,
+    padding: 18,
     alignItems: 'center',
     marginBottom: 16,
   },
   targetHeader: {
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 0.5,
-    marginBottom: 12,
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.8,
+    marginBottom: 14,
   },
   dualShapes: {
     flexDirection: 'row',
     gap: 20,
-    marginVertical: 8,
+    marginBottom: 14,
   },
   targetSquare: {
     width: 60,
     height: 60,
-    borderRadius: 14,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
   squareText: {
-    color: '#FFFFFF',
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '900',
+    color: '#FFFFFF',
   },
   targetHint: {
-    fontSize: 11,
+    fontSize: 12,
     textAlign: 'center',
-    marginTop: 10,
-    lineHeight: 15,
+    lineHeight: 16,
   },
   card: {
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 14,
     borderWidth: 1,
-    marginBottom: 14,
+    padding: 14,
+    marginBottom: 12,
   },
   cardTitle: {
     fontSize: 14,
-    fontWeight: '800',
+    fontWeight: '700',
     marginBottom: 10,
   },
   colorRow: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 10,
     marginBottom: 12,
   },
   colorBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
   },
   sliderRow: {
     flexDirection: 'row',
@@ -317,8 +427,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   contrastText: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 13,
   },
   btnRow: {
     flexDirection: 'row',
@@ -331,8 +440,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   adjustText: {
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: 12,
+    fontWeight: '600',
   },
 });
-

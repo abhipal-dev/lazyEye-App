@@ -1,12 +1,21 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, View } from 'react-native';
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  View,
+} from 'react-native';
 import { useTheme } from '../context/ThemeContext';
+import CustomIcon from './CustomIcon';
 
 export default function Button({
   title,
   onPress,
   variant = 'primary',
   icon,
+  iconLibrary,
+  iconName,
   loading = false,
   disabled = false,
   style,
@@ -19,7 +28,7 @@ export default function Button({
       case 'secondary':
         return {
           bg: theme.colors.surfaceElevated,
-          border: theme.colors.border,
+          border: theme.colors.buttonBorder || theme.colors.border,
           text: theme.colors.text,
         };
       case 'outline':
@@ -56,16 +65,29 @@ export default function Button({
         {
           backgroundColor: btnStyle.bg,
           borderColor: btnStyle.border,
-          opacity: disabled ? 0.5 : 1,
+          opacity: disabled ? 0.45 : 1,
         },
         style,
       ]}
+      accessible={true}
+      accessibilityRole="button"
     >
       {loading ? (
         <ActivityIndicator color={btnStyle.text} size="small" />
       ) : (
         <View style={styles.contentRow}>
-          {icon && <Text style={styles.icon}>{icon}</Text>}
+          {iconName ? (
+            <CustomIcon
+              library={iconLibrary || 'Feather'}
+              name={iconName}
+              size={18}
+              color={btnStyle.text}
+            />
+          ) : icon && typeof icon === 'string' ? (
+            <Text style={[styles.icon, { color: btnStyle.text }]}>{icon}</Text>
+          ) : icon ? (
+            icon
+          ) : null}
           <Text style={[styles.text, { color: btnStyle.text }, textStyle]}>
             {title}
           </Text>
@@ -78,16 +100,11 @@ export default function Button({
 const styles = StyleSheet.create({
   button: {
     paddingVertical: 13,
-    paddingHorizontal: 18,
-    borderRadius: 14,
+    paddingHorizontal: 20,
+    borderRadius: 12,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
   },
   contentRow: {
     flexDirection: 'row',
@@ -95,13 +112,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
   },
+  text: {
+    fontSize: 15,
+    fontWeight: '600',
+    letterSpacing: 0.1,
+  },
   icon: {
     fontSize: 16,
   },
-  text: {
-    fontSize: 14,
-    fontWeight: '700',
-    letterSpacing: -0.2,
-  },
 });
-

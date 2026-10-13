@@ -12,18 +12,26 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { api } from '../../services/api';
+import CustomIcon from '../../components/CustomIcon';
+import HeatmapGrid from '../../components/HeatmapGrid';
+import HeaderBar from '../../components/HeaderBar';
 
-export default function TherapyHistoryScreen({ onClose }) {
+export default function TherapyHistoryScreen({
+  onClose,
+  onOpenThemeModal,
+  onOpenProfile,
+}) {
   const { theme } = useTheme();
   const { currentUser } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await api.fetchPatientActivity(currentUser?.id || 1);
+        const res = await api.fetchPatientActivity(currentUser?.id || 22);
         setData(res);
       } catch (e) {
       } finally {
@@ -36,21 +44,73 @@ export default function TherapyHistoryScreen({ onClose }) {
   const sessions = data?.recent_sessions || [];
   const consultations = data?.consultations || [];
 
+  // Filter sessions if a specific date was selected on the heatmap
+  const filteredSessions = selectedDate
+    ? sessions.filter((s) => (s.played_at || '').startsWith(selectedDate))
+    : sessions;
+
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <View style={[styles.topBar, { backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.border }]}>
-        <View style={styles.topBarLeft}>
-          <Text style={styles.topIcon}>📜</Text>
-          <View>
-            <Text style={[styles.topTitle, { color: theme.colors.text }]}>My Therapy History</Text>
-            <Text style={[styles.topSub, { color: theme.colors.textSecondary }]}>Scores, play logs & doctor remarks</Text>
+      {onClose ? (
+        <View
+          style={[
+            styles.topBar,
+            {
+              backgroundColor: theme.colors.surface,
+              borderBottomColor: theme.colors.border,
+            },
+          ]}
+        >
+          <View style={styles.topBarLeft}>
+            <View
+              style={[
+                styles.iconBox,
+                {
+                  backgroundColor: theme.colors.iconContainerBg,
+                  borderColor: theme.colors.iconContainerBorder,
+                },
+              ]}
+            >
+              <CustomIcon
+                library="Feather"
+                name="activity"
+                size={18}
+                color={theme.colors.text}
+              />
+            </View>
+            <View>
+              <Text style={[styles.topTitle, { color: theme.colors.text }]}>
+                Therapy Records
+              </Text>
+              <Text style={[styles.topSub, { color: theme.colors.textSecondary }]}>
+                Real Session Logs & Heatmap
+              </Text>
+            </View>
           </View>
-        </View>
 
-        <TouchableOpacity onPress={onClose} style={[styles.closeBtn, { backgroundColor: theme.colors.inputBg, borderColor: theme.colors.border }]}>
-          <Text style={[styles.closeBtnText, { color: theme.colors.text }]}>Close</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            onPress={onClose}
+            style={[
+              styles.closeBtn,
+              {
+                backgroundColor: theme.colors.iconContainerBg,
+                borderColor: theme.colors.iconContainerBorder,
+              },
+            ]}
+            accessible={true}
+            accessibilityLabel="Close history"
+          >
+            <Text style={[styles.closeBtnText, { color: theme.colors.text }]}>Done</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <HeaderBar
+          title="Therapy History"
+          subtitle={currentUser?.fullname?.split(' ')[0]}
+          onThemePress={onOpenThemeModal}
+          onProfilePress={onOpenProfile}
+        />
+      )}
 
       {loading ? (
         <View style={styles.center}>
@@ -58,67 +118,163 @@ export default function TherapyHistoryScreen({ onClose }) {
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          {/* Summary Banner */}
-          <View style={[styles.statsCard, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}>
+          {/* Summary Banner with Real Stats */}
+          <View
+            style={[
+              styles.statsCard,
+              {
+                backgroundColor: theme.colors.cardBg,
+                borderColor: theme.colors.cardBorder,
+              },
+            ]}
+          >
             <View style={styles.statCol}>
               <Text style={[styles.statVal, { color: theme.colors.primary }]}>
                 {data?.metrics?.total_sessions || 0}
               </Text>
-              <Text style={[styles.statLbl, { color: theme.colors.textMuted }]}>GAMES PLAYED</Text>
+              <Text style={[styles.statLbl, { color: theme.colors.textMuted }]}>
+                SESSIONS
+              </Text>
             </View>
 
             <View style={styles.statCol}>
               <Text style={[styles.statVal, { color: theme.colors.success }]}>
                 {data?.metrics?.total_minutes || 0}m
               </Text>
-              <Text style={[styles.statLbl, { color: theme.colors.textMuted }]}>MINUTES LOGGED</Text>
+              <Text style={[styles.statLbl, { color: theme.colors.textMuted }]}>
+                MINUTES
+              </Text>
             </View>
 
             <View style={styles.statCol}>
               <Text style={[styles.statVal, { color: theme.colors.info }]}>
                 {data?.metrics?.avg_score || 0}
               </Text>
-              <Text style={[styles.statLbl, { color: theme.colors.textMuted }]}>AVERAGE SCORE</Text>
+              <Text style={[styles.statLbl, { color: theme.colors.textMuted }]}>
+                AVG SCORE
+              </Text>
+            </View>
+
+            <View style={styles.statCol}>
+              <Text style={[styles.statVal, { color: theme.colors.warning }]}>
+                {data?.metrics?.prescribed_goal || 20}m
+              </Text>
+              <Text style={[styles.statLbl, { color: theme.colors.textMuted }]}>
+                GOAL
+              </Text>
             </View>
           </View>
 
-          {/* Doctor Consultations */}
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            Doctor Prescriptions & Notes
-          </Text>
+          {/* 84-Day Therapy Adherence Heatmap */}
+          <View style={{ marginBottom: 16 }}>
+            <HeatmapGrid
+              heatmapData={data?.heatmap || {}}
+              selectedDate={selectedDate}
+              onSelectDate={(d) => setSelectedDate(selectedDate === d ? null : d)}
+            />
+            {selectedDate && (
+              <TouchableOpacity
+                onPress={() => setSelectedDate(null)}
+                style={styles.clearFilterBtn}
+              >
+                <Text style={[styles.clearFilterText, { color: theme.colors.primary }]}>
+                  Filtered to {selectedDate} • Tap to view all
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
 
-          {consultations.map((c) => (
-            <View key={c.id} style={[styles.consultBox, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}>
-              <View style={styles.consultTop}>
-                <Text style={[styles.consultDoc, { color: theme.colors.text }]}>{c.doctor_name}</Text>
-                <Text style={[styles.consultRating, { color: theme.colors.success }]}>{c.compliance_assessment}</Text>
-              </View>
-              <Text style={[styles.consultNote, { color: theme.colors.textSecondary }]}>"{c.notes}"</Text>
-            </View>
-          ))}
+          {/* Doctor Consultations */}
+          {consultations.length > 0 && (
+            <>
+              <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                Optometrist Clinical Notes
+              </Text>
+
+              {consultations.map((c) => (
+                <View
+                  key={c.id}
+                  style={[
+                    styles.consultBox,
+                    {
+                      backgroundColor: theme.colors.cardBg,
+                      borderColor: theme.colors.cardBorder,
+                    },
+                  ]}
+                >
+                  <View style={styles.consultTop}>
+                    <Text style={[styles.consultDoc, { color: theme.colors.text }]}>
+                      {c.doctor_name}
+                    </Text>
+                    <Text style={[styles.consultRating, { color: theme.colors.success }]}>
+                      {c.compliance_assessment}
+                    </Text>
+                  </View>
+                  <Text style={[styles.consultNote, { color: theme.colors.textSecondary }]}>
+                    "{c.notes}"
+                  </Text>
+                </View>
+              ))}
+            </>
+          )}
 
           {/* Sessions List */}
-          <Text style={[styles.sectionTitle, { color: theme.colors.text, marginTop: 18 }]}>
-            Completed Game Sessions ({sessions.length})
-          </Text>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text, marginTop: 12 }]}>
+              {selectedDate ? `Sessions on ${selectedDate}` : `All Sessions (${sessions.length})`}
+            </Text>
+          </View>
 
-          {sessions.map((s, idx) => (
-            <View key={s.id || idx} style={[styles.sessionRow, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}>
-              <View style={styles.sessionLeft}>
-                <Text style={styles.gameEmoji}>🎮</Text>
-                <View>
-                  <Text style={[styles.gameTitle, { color: theme.colors.text }]}>{s.game_name}</Text>
-                  <Text style={[styles.gameTime, { color: theme.colors.textMuted }]}>{s.played_at}</Text>
-                </View>
+          {filteredSessions.map((s) => (
+            <View
+              key={s.id}
+              style={[
+                styles.sessionCard,
+                {
+                  backgroundColor: theme.colors.cardBg,
+                  borderColor: theme.colors.cardBorder,
+                },
+              ]}
+            >
+              <View
+                style={[
+                  styles.gameIconBox,
+                  {
+                    backgroundColor: theme.colors.iconContainerBg,
+                    borderColor: theme.colors.iconContainerBorder,
+                  },
+                ]}
+              >
+                <CustomIcon
+                  library={s.game_name?.includes('Snake') ? 'MaterialCommunityIcons' : 'Ionicons'}
+                  name={s.game_name?.includes('Snake') ? 'snake' : 'game-controller-outline'}
+                  size={18}
+                  color={theme.colors.primary}
+                />
               </View>
+
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.sessionGame, { color: theme.colors.text }]}>
+                  {s.game_name}
+                </Text>
+                <Text style={[styles.sessionDate, { color: theme.colors.textMuted }]}>
+                  {s.played_at ? s.played_at.slice(0, 16) : s.created_at ? s.created_at.slice(0, 16) : 'Recorded'}
+                </Text>
+              </View>
+
               <View style={{ alignItems: 'flex-end' }}>
-                <Text style={[styles.scoreVal, { color: theme.colors.primary }]}>{s.score} pts</Text>
-                <Text style={[styles.durVal, { color: theme.colors.textSecondary }]}>
-                  {Math.round(s.duration_seconds / 60)} mins
+                <Text style={[styles.sessionScore, { color: theme.colors.text }]}>
+                  {s.score} pts
+                </Text>
+                <Text style={[styles.sessionDur, { color: theme.colors.primary }]}>
+                  {Math.round((s.duration_seconds || 600) / 60)} mins
                 </Text>
               </View>
             </View>
           ))}
+
+          {/* Floating Bottom Tab Bar Clearance */}
+          <View style={{ height: 96 }} />
         </ScrollView>
       )}
     </View>
@@ -129,9 +285,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  center: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   topBar: {
-    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 28) + 12 : 16,
-    paddingBottom: 14,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 28) + 8 : 14,
+    paddingBottom: 12,
     paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -143,40 +304,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  topIcon: {
-    fontSize: 22,
+  iconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   topTitle: {
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '700',
   },
   topSub: {
     fontSize: 11,
   },
   closeBtn: {
     paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
     borderWidth: 1,
   },
   closeBtnText: {
     fontSize: 12,
-    fontWeight: '700',
-  },
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    fontWeight: '600',
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 40,
+    paddingBottom: 36,
   },
   statsCard: {
     flexDirection: 'row',
-    borderRadius: 16,
-    padding: 14,
+    borderRadius: 14,
     borderWidth: 1,
+    padding: 16,
     marginBottom: 16,
   },
   statCol: {
@@ -185,22 +346,38 @@ const styles = StyleSheet.create({
   },
   statVal: {
     fontSize: 18,
-    fontWeight: '800',
+    fontWeight: '700',
   },
   statLbl: {
-    fontSize: 9.5,
-    fontWeight: '700',
+    fontSize: 10,
+    fontWeight: '600',
     marginTop: 2,
+    letterSpacing: 0.4,
+  },
+  clearFilterBtn: {
+    alignSelf: 'center',
+    marginTop: 8,
+    paddingVertical: 4,
+  },
+  clearFilterText: {
+    fontSize: 12,
+    fontWeight: '600',
   },
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: '800',
+    fontSize: 15,
+    fontWeight: '700',
     marginBottom: 10,
   },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
   consultBox: {
-    borderRadius: 14,
-    padding: 14,
+    borderRadius: 12,
     borderWidth: 1,
+    padding: 14,
     marginBottom: 10,
   },
   consultTop: {
@@ -209,49 +386,49 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   consultDoc: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 14,
+    fontWeight: '600',
   },
   consultRating: {
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: 12,
+    fontWeight: '600',
   },
   consultNote: {
-    fontSize: 11.5,
-    fontStyle: 'italic',
+    fontSize: 12,
     lineHeight: 16,
+    fontStyle: 'italic',
   },
-  sessionRow: {
+  sessionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 12,
-    borderRadius: 14,
+    borderRadius: 12,
     borderWidth: 1,
-    marginBottom: 8,
+    padding: 12,
+    marginBottom: 10,
+    gap: 12,
   },
-  sessionLeft: {
-    flexDirection: 'row',
+  gameIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
     alignItems: 'center',
-    gap: 10,
+    justifyContent: 'center',
   },
-  gameEmoji: {
-    fontSize: 20,
+  sessionGame: {
+    fontSize: 14,
+    fontWeight: '600',
   },
-  gameTitle: {
-    fontSize: 13,
+  sessionDate: {
+    fontSize: 11,
+    marginTop: 2,
+  },
+  sessionScore: {
+    fontSize: 14,
     fontWeight: '700',
   },
-  gameTime: {
-    fontSize: 10.5,
-    marginTop: 1,
-  },
-  scoreVal: {
-    fontSize: 12.5,
-    fontWeight: '800',
-  },
-  durVal: {
-    fontSize: 10.5,
+  sessionDur: {
+    fontSize: 11,
+    marginTop: 2,
   },
 });
-

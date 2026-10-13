@@ -12,7 +12,7 @@ import {
 import { useTheme } from '../../context/ThemeContext';
 import { api } from '../../services/api';
 import HeatmapGrid from '../../components/HeatmapGrid';
-import Button from '../../components/Button';
+import CustomIcon from '../../components/CustomIcon';
 
 export default function HeatmapModalScreen({ patient, onClose }) {
   const { theme } = useTheme();
@@ -53,9 +53,32 @@ export default function HeatmapModalScreen({ patient, onClose }) {
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Modal Top Nav Bar */}
-      <View style={[styles.topBar, { backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.border }]}>
+      <View
+        style={[
+          styles.topBar,
+          {
+            backgroundColor: theme.colors.surface,
+            borderBottomColor: theme.colors.border,
+          },
+        ]}
+      >
         <View style={styles.patientHeadRow}>
-          <Text style={styles.patientEmoji}>🔥</Text>
+          <View
+            style={[
+              styles.iconBox,
+              {
+                backgroundColor: theme.colors.iconContainerBg,
+                borderColor: theme.colors.iconContainerBorder,
+              },
+            ]}
+          >
+            <CustomIcon
+              library="Feather"
+              name="calendar"
+              size={18}
+              color={theme.colors.primary}
+            />
+          </View>
           <View>
             <Text style={[styles.patientTitle, { color: theme.colors.text }]}>
               {patient?.fullname || 'Patient'}
@@ -68,9 +91,17 @@ export default function HeatmapModalScreen({ patient, onClose }) {
 
         <TouchableOpacity
           onPress={onClose}
-          style={[styles.closeBtn, { backgroundColor: theme.colors.inputBg, borderColor: theme.colors.border }]}
+          style={[
+            styles.closeBtn,
+            {
+              backgroundColor: theme.colors.iconContainerBg,
+              borderColor: theme.colors.iconContainerBorder,
+            },
+          ]}
+          accessible={true}
+          accessibilityLabel="Close report"
         >
-          <Text style={[styles.closeBtnText, { color: theme.colors.text }]}>✕ Close</Text>
+          <Text style={[styles.closeBtnText, { color: theme.colors.text }]}>Done</Text>
         </TouchableOpacity>
       </View>
 
@@ -78,36 +109,68 @@ export default function HeatmapModalScreen({ patient, onClose }) {
         <View style={styles.centerBox}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
           <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>
-            Aggregating 84-day clinical metrics...
+            Aggregating clinical activity metrics...
           </Text>
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           {/* Quick Metrics Bar */}
           <View style={styles.kpiRow}>
-            <View style={[styles.kpiBox, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}>
-              <Text style={[styles.kpiLabel, { color: theme.colors.textMuted }]}>Total Sessions</Text>
+            <View
+              style={[
+                styles.kpiBox,
+                {
+                  backgroundColor: theme.colors.cardBg,
+                  borderColor: theme.colors.cardBorder,
+                },
+              ]}
+            >
+              <Text style={[styles.kpiLabel, { color: theme.colors.textMuted }]}>Sessions</Text>
               <Text style={[styles.kpiValue, { color: theme.colors.text }]}>
                 {activityData?.metrics?.total_sessions || 0}
               </Text>
             </View>
 
-            <View style={[styles.kpiBox, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}>
-              <Text style={[styles.kpiLabel, { color: theme.colors.textMuted }]}>Therapy Minutes</Text>
+            <View
+              style={[
+                styles.kpiBox,
+                {
+                  backgroundColor: theme.colors.cardBg,
+                  borderColor: theme.colors.cardBorder,
+                },
+              ]}
+            >
+              <Text style={[styles.kpiLabel, { color: theme.colors.textMuted }]}>Minutes</Text>
               <Text style={[styles.kpiValue, { color: theme.colors.primary }]}>
                 {activityData?.metrics?.total_minutes || 0}m
               </Text>
             </View>
 
-            <View style={[styles.kpiBox, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}>
-              <Text style={[styles.kpiLabel, { color: theme.colors.textMuted }]}>Average Score</Text>
+            <View
+              style={[
+                styles.kpiBox,
+                {
+                  backgroundColor: theme.colors.cardBg,
+                  borderColor: theme.colors.cardBorder,
+                },
+              ]}
+            >
+              <Text style={[styles.kpiLabel, { color: theme.colors.textMuted }]}>Avg Score</Text>
               <Text style={[styles.kpiValue, { color: theme.colors.success }]}>
                 {activityData?.metrics?.avg_score || 0}
               </Text>
             </View>
 
-            <View style={[styles.kpiBox, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}>
-              <Text style={[styles.kpiLabel, { color: theme.colors.textMuted }]}>Daily Target</Text>
+            <View
+              style={[
+                styles.kpiBox,
+                {
+                  backgroundColor: theme.colors.cardBg,
+                  borderColor: theme.colors.cardBorder,
+                },
+              ]}
+            >
+              <Text style={[styles.kpiLabel, { color: theme.colors.textMuted }]}>Goal</Text>
               <Text style={[styles.kpiValue, { color: theme.colors.info }]}>
                 {activityData?.metrics?.prescribed_goal || 20}m
               </Text>
@@ -123,89 +186,98 @@ export default function HeatmapModalScreen({ patient, onClose }) {
 
           {/* Active Filter Banner */}
           {selectedDate && (
-            <View style={[styles.filterBar, { backgroundColor: `${theme.colors.primary}18`, borderColor: theme.colors.primary }]}>
+            <View
+              style={[
+                styles.filterBar,
+                {
+                  backgroundColor: theme.colors.cardBg,
+                  borderColor: theme.colors.primary,
+                },
+              ]}
+            >
               <Text style={[styles.filterText, { color: theme.colors.primary }]}>
                 Filtered: Sessions on {selectedDate} ({filteredSessions.length} played)
               </Text>
               <TouchableOpacity onPress={() => setSelectedDate(null)}>
-                <Text style={[styles.clearFilterText, { color: theme.colors.text }]}>Show All Days</Text>
+                <Text style={[styles.clearFilterText, { color: theme.colors.text }]}>
+                  Show All Days
+                </Text>
               </TouchableOpacity>
             </View>
           )}
 
-          {/* Therapy Sessions Log Table */}
+          {/* Therapy Sessions Log */}
           <View style={styles.sectionHeader}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              {selectedDate ? `Games on ${selectedDate}` : `Recent Sessions Log (${filteredSessions.length})`}
+              {selectedDate ? `Games on ${selectedDate}` : `Recent Sessions (${filteredSessions.length})`}
             </Text>
           </View>
 
           {filteredSessions.length === 0 ? (
-            <View style={[styles.emptyBox, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}>
-              <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>
-                No therapy sessions recorded on {selectedDate || 'this date'}.
+            <View
+              style={[
+                styles.emptyDayBox,
+                {
+                  backgroundColor: theme.colors.cardBg,
+                  borderColor: theme.colors.cardBorder,
+                },
+              ]}
+            >
+              <Text style={[styles.emptyDayText, { color: theme.colors.textMuted }]}>
+                No gameplay logged on this date.
               </Text>
             </View>
           ) : (
-            filteredSessions.map((session, idx) => (
+            filteredSessions.map((s) => (
               <View
-                key={session.id || idx}
-                style={[styles.sessionRow, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}
+                key={s.id}
+                style={[
+                  styles.sessionRow,
+                  {
+                    backgroundColor: theme.colors.cardBg,
+                    borderColor: theme.colors.cardBorder,
+                  },
+                ]}
               >
-                <View style={styles.sessionLeft}>
-                  <Text style={styles.gameIcon}>🎮</Text>
-                  <View>
-                    <Text style={[styles.gameName, { color: theme.colors.text }]}>{session.game_name}</Text>
-                    <Text style={[styles.gameTime, { color: theme.colors.textMuted }]}>
-                      {session.played_at}
-                    </Text>
-                  </View>
+                <View
+                  style={[
+                    styles.gameIconBox,
+                    {
+                      backgroundColor: theme.colors.iconContainerBg,
+                      borderColor: theme.colors.iconContainerBorder,
+                    },
+                  ]}
+                >
+                  <CustomIcon
+                    library={s.game_name?.includes('Snake') ? 'MaterialCommunityIcons' : 'Ionicons'}
+                    name={s.game_name?.includes('Snake') ? 'snake' : 'grid-outline'}
+                    size={16}
+                    color={theme.colors.primary}
+                  />
                 </View>
 
-                <View style={styles.sessionRight}>
-                  <View style={[styles.scoreBadge, { backgroundColor: `${theme.colors.primary}18` }]}>
-                    <Text style={[styles.scoreText, { color: theme.colors.primary }]}>
-                      {session.score} pts
-                    </Text>
-                  </View>
-                  <Text style={[styles.durationText, { color: theme.colors.textSecondary }]}>
-                    {Math.round(session.duration_seconds / 60)} mins
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.sessionGame, { color: theme.colors.text }]}>
+                    {s.game_name}
+                  </Text>
+                  <Text style={[styles.sessionDate, { color: theme.colors.textSecondary }]}>
+                    {s.played_at}
+                  </Text>
+                </View>
+
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={[styles.sessionScore, { color: theme.colors.text }]}>
+                    {s.score} pts
+                  </Text>
+                  <Text style={[styles.sessionDur, { color: theme.colors.primary }]}>
+                    {s.duration_minutes} mins
                   </Text>
                 </View>
               </View>
             ))
           )}
 
-          {/* Clinical Consultations History */}
-          <View style={[styles.sectionHeader, { marginTop: 24 }]}>
-            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              Doctor Consultations & Remarks ({consultations.length})
-            </Text>
-          </View>
-
-          {consultations.map((c) => (
-            <View
-              key={c.id}
-              style={[styles.consultCard, { backgroundColor: theme.colors.cardBg, borderColor: theme.colors.border }]}
-            >
-              <View style={styles.consultTop}>
-                <Text style={[styles.consultDoctor, { color: theme.colors.text }]}>
-                  {c.doctor_name || 'Dr. Sarah Mitchell'}
-                </Text>
-                <View style={[styles.complianceBadge, { backgroundColor: `${theme.colors.success}18` }]}>
-                  <Text style={[styles.complianceText, { color: theme.colors.success }]}>
-                    {c.compliance_assessment || 'Good'}
-                  </Text>
-                </View>
-              </View>
-              <Text style={[styles.consultNotes, { color: theme.colors.textSecondary }]}>
-                "{c.notes}"
-              </Text>
-              <Text style={[styles.consultMeta, { color: theme.colors.textMuted }]}>
-                Prescription: {c.prescribed_minutes}m/day • Status: {c.status}
-              </Text>
-            </View>
-          ))}
+          <View style={{ height: 28 }} />
         </ScrollView>
       )}
     </View>
@@ -217,8 +289,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   topBar: {
-    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 28) + 12 : 16,
-    paddingBottom: 14,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 28) + 8 : 14,
+    paddingBottom: 12,
     paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -229,32 +301,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    flex: 1,
   },
-  patientEmoji: {
-    fontSize: 22,
+  iconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   patientTitle: {
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '700',
   },
   patientSub: {
     fontSize: 11,
-    marginTop: 1,
   },
   closeBtn: {
     paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
     borderWidth: 1,
   },
   closeBtnText: {
     fontSize: 12,
-    fontWeight: '700',
-  },
-  scrollContent: {
-    padding: 16,
-    paddingBottom: 50,
+    fontWeight: '600',
   },
   centerBox: {
     flex: 1,
@@ -263,139 +334,101 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   loadingText: {
-    marginTop: 12,
     fontSize: 13,
+    marginTop: 12,
+  },
+  scrollContent: {
+    padding: 16,
+    paddingBottom: 36,
   },
   kpiRow: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 6,
+    marginBottom: 16,
   },
   kpiBox: {
     flex: 1,
-    borderRadius: 14,
     padding: 10,
+    borderRadius: 12,
     borderWidth: 1,
     alignItems: 'center',
   },
   kpiLabel: {
-    fontSize: 9.5,
+    fontSize: 10,
     fontWeight: '600',
-    textTransform: 'uppercase',
+    marginBottom: 2,
+    letterSpacing: 0.3,
   },
   kpiValue: {
     fontSize: 16,
-    fontWeight: '800',
-    marginTop: 3,
+    fontWeight: '700',
   },
   filterBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 12,
-    borderRadius: 12,
+    padding: 10,
+    borderRadius: 10,
     borderWidth: 1,
-    marginBottom: 14,
+    marginVertical: 12,
   },
   filterText: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   clearFilterText: {
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: 12,
+    fontWeight: '600',
     textDecorationLine: 'underline',
   },
   sectionHeader: {
+    marginTop: 16,
     marginBottom: 10,
   },
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: '800',
+    fontSize: 15,
+    fontWeight: '700',
   },
-  emptyBox: {
-    padding: 18,
-    borderRadius: 14,
+  emptyDayBox: {
+    padding: 20,
+    borderRadius: 12,
     borderWidth: 1,
     alignItems: 'center',
   },
-  emptyText: {
-    fontSize: 12,
+  emptyDayText: {
+    fontSize: 13,
   },
   sessionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     padding: 12,
-    borderRadius: 14,
+    borderRadius: 12,
     borderWidth: 1,
     marginBottom: 8,
-  },
-  sessionLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
     gap: 10,
   },
-  gameIcon: {
-    fontSize: 20,
+  gameIconBox: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  gameName: {
-    fontSize: 13,
-    fontWeight: '700',
+  sessionGame: {
+    fontSize: 14,
+    fontWeight: '600',
   },
-  gameTime: {
-    fontSize: 10.5,
+  sessionDate: {
+    fontSize: 11,
     marginTop: 2,
   },
-  sessionRight: {
-    alignItems: 'flex-end',
-    gap: 4,
+  sessionScore: {
+    fontSize: 14,
+    fontWeight: '700',
   },
-  scoreBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
-  },
-  scoreText: {
+  sessionDur: {
     fontSize: 11,
-    fontWeight: '700',
-  },
-  durationText: {
-    fontSize: 10,
-  },
-  consultCard: {
-    borderRadius: 14,
-    padding: 14,
-    borderWidth: 1,
-    marginBottom: 10,
-  },
-  consultTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 6,
-  },
-  consultDoctor: {
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  complianceBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
-  },
-  complianceText: {
-    fontSize: 10.5,
-    fontWeight: '700',
-  },
-  consultNotes: {
-    fontSize: 12,
-    lineHeight: 17,
-    fontStyle: 'italic',
-    marginBottom: 6,
-  },
-  consultMeta: {
-    fontSize: 10.5,
+    marginTop: 2,
   },
 });
-
