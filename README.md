@@ -1,5 +1,12 @@
 # 👁️ LazyEye Mobile — React Native Vision Therapy Platform
 
+<p align="center">
+  <a href="https://github.com/abhipal-dev/lazyEye-App/actions/workflows/ci.yml"><img src="https://github.com/abhipal-dev/lazyEye-App/actions/workflows/ci.yml/badge.svg" alt="Mobile CI Pipeline"></a>
+  <img src="https://img.shields.io/badge/React%20Native-0.87-61DAFB?style=for-the-badge&logo=react" alt="React Native">
+  <img src="https://img.shields.io/badge/Platform-Android%20%7C%20iOS-lightgrey?style=for-the-badge&logo=android" alt="Platforms">
+  <img src="https://img.shields.io/badge/Storage-MMKV%20%2F%20SQLite-4E9A06?style=for-the-badge" alt="MMKV / SQLite">
+</p>
+
 A comprehensive, role-scoped cross-platform **React Native** application for **LazyEye (Amblyopia)** clinical rehabilitation. Built with dichoptic anaglyph gaming, multi-tier user workspaces, 84-day therapy intensity heatmaps, and customizable visual themes.
 
 ---
