@@ -23,6 +23,7 @@ import GameWebView from '../components/GameWebView';
 import BottomTabBar from '../components/BottomTabBar';
 import { GAMES } from '../services/games';
 import settingsHandler from '../services/settingsHandler';
+import offlineQueue from '../services/offlineQueue';
 
 export default function RootNavigator() {
   const { currentUser, loading } = useAuth();
@@ -84,6 +85,20 @@ export default function RootNavigator() {
             source={resolveGameSource(selectedGame)}
             leftColor={leftCol}
             rightColor={rightCol}
+            onMessage={(raw) => {
+              try {
+                const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                if (parsed && (parsed.msg === 'Game Over' || parsed.msg === 'Game Ended' || parsed.gameOver)) {
+                  const score = Number(parsed.score) || 0;
+                  offlineQueue.enqueue({
+                    userId: currentUser?.id || 1,
+                    gameName: selectedGame.title,
+                    score,
+                    durationSeconds: 300,
+                  });
+                }
+              } catch (e) {}
+            }}
             onClose={() => {
               setSelectedGame(null);
               setCurrentView('main');

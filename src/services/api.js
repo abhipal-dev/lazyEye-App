@@ -2,6 +2,7 @@
 // Connects to live Render API (https://lazyeye.onrender.com) with real SQLite database fallback
 
 import realData from './realData.json';
+import offlineQueue from './offlineQueue';
 
 export const API_BASE_URL = 'https://lazyeye.onrender.com';
 
@@ -263,7 +264,7 @@ export const api = {
     };
   },
 
-  // Game Recording
+  // Game Recording with resilient offline queue
   recordGameSession: async ({ userId, gameName, score, durationSeconds }) => {
     const newRecord = {
       id: Date.now(),
@@ -274,8 +275,19 @@ export const api = {
       played_at: new Date().toISOString().replace('T', ' ').substring(0, 19),
     };
     localGameRecords.unshift(newRecord);
-    return { success: true, record: newRecord };
+
+    const queueResult = offlineQueue.enqueue({
+      userId,
+      gameName,
+      score,
+      durationSeconds,
+      playedAt: newRecord.played_at,
+    });
+
+    return { success: true, record: newRecord, queued: queueResult.success };
   },
+
+  offlineQueue,
 
   // Update Calibration & Lens Setup
   updateCalibration: async (userId, updates) => {
