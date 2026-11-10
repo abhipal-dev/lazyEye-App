@@ -12,6 +12,7 @@ import { useTheme } from '../../context/ThemeContext';
 import HeaderBar from '../../components/HeaderBar';
 import CustomIcon from '../../components/CustomIcon';
 import { GAMES } from '../../services/games';
+import offlineQueue from '../../services/offlineQueue';
 
 import realDataService from '../../services/realDataService';
 
@@ -36,6 +37,19 @@ export default function PatientHomeScreen({
   const rightColorHex = currentUser?.right_eye_contrast_color || '#0284C7';
   const firstName = currentUser?.fullname?.split(' ')[0] || 'Friend';
 
+  const [queueStats, setQueueStats] = React.useState(() => offlineQueue.getStats());
+
+  React.useEffect(() => {
+    const unsub = offlineQueue.subscribe((stats) => {
+      setQueueStats(stats);
+    });
+    offlineQueue.startAutoSync();
+    return () => {
+      unsub();
+      offlineQueue.stopAutoSync();
+    };
+  }, []);
+
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <HeaderBar
@@ -58,6 +72,30 @@ export default function PatientHomeScreen({
             Ready for today's visual training session?
           </Text>
         </View>
+
+        {queueStats?.pendingCount > 0 && (
+          <TouchableOpacity
+            style={[
+              styles.syncBanner,
+              {
+                backgroundColor: theme.colors.cardBg,
+                borderColor: theme.colors.cardBorder,
+              },
+            ]}
+            onPress={() => offlineQueue.flush()}
+            activeOpacity={0.8}
+          >
+            <View style={styles.syncBannerLeft}>
+              <View style={[styles.syncStatusDot, { backgroundColor: queueStats.isSyncing ? '#F59E0B' : '#10B981' }]} />
+              <Text style={[styles.syncBannerText, { color: theme.colors.text }]}>
+                {queueStats.pendingCount} offline session{queueStats.pendingCount > 1 ? 's' : ''} stored
+              </Text>
+            </View>
+            <Text style={[styles.syncActionText, { color: theme.colors.primary }]}>
+              {queueStats.isSyncing ? 'Syncing...' : 'Sync Now'}
+            </Text>
+          </TouchableOpacity>
+        )}
 
         {/* ONE CLEAR PRIMARY ACTION: Daily Regimen Card */}
         <View
@@ -575,5 +613,33 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     marginBottom: 3,
+  },
+  syncBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 14,
+    borderWidth: 1,
+    marginBottom: 16,
+  },
+  syncBannerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  syncStatusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  syncBannerText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  syncActionText: {
+    fontSize: 12,
+    fontWeight: '700',
   },
 });

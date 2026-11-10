@@ -15,7 +15,7 @@
  * Synchronous in-memory access with automatic multi-tier fallback and persistence.
  */
 
-import { Platform } from 'react-native';
+
 
 // In-memory synchronous cache for zero-latency instant reads & writes
 let memoryCache = {};
