@@ -8,6 +8,7 @@
     "start": "react-native start",
     "test": "jest",
     "test:offline": "node scripts/test-offline-queue.js",
+    "test:theme": "node scripts/test-theme-engine.js",
     "lint": "eslint .",
     "postinstall": "node scripts/patch-modules.js"
   },
