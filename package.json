@@ -9,6 +9,7 @@
     "test": "jest",
     "test:offline": "node scripts/test-offline-queue.js",
     "test:theme": "node scripts/test-theme-engine.js",
+    "test:all": "node scripts/test-all.js",
     "lint": "eslint .",
     "postinstall": "node scripts/patch-modules.js"
   },
