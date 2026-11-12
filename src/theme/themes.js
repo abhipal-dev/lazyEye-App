@@ -1,59 +1,59 @@
 // LazyEye Mobile Theme Definitions
-// High-Contrast, WCAG AA Compliant Clinical & Therapy Presets
+// Simplified Clinical & Native Presets
 
 export const THEMES = {
-  cyberCyan: {
-    id: 'cyberCyan',
-    name: 'Cyber Cyan (Dark Therapy)',
-    description: 'High-contrast clinical dark mode with electric cyan accents',
-    icon: 'flash-outline',
+  calmDark: {
+    id: 'calmDark',
+    name: 'Calm Dark (Night Therapy)',
+    description: 'Clean slate dark mode with soft clinical blue accents',
+    icon: 'moon-outline',
     isDark: true,
     statusBar: 'light-content',
     colors: {
-      background: '#070C18',
-      surface: '#0D1426',
-      surfaceElevated: '#131D36',
-      surfaceHighlight: '#1A2748',
+      background: '#0B1120',
+      surface: '#111827',
+      surfaceElevated: '#1E293B',
+      surfaceHighlight: '#334155',
       
-      border: '#24345A',
-      borderLight: '#32477A',
-      cardBorder: 'rgba(255, 255, 255, 0.14)',
-      buttonBorder: 'rgba(255, 255, 255, 0.22)',
-      iconContainerBg: '#131D36',
-      iconContainerBorder: 'rgba(255, 255, 255, 0.16)',
-      selectedBorder: '#00E5FF',
-      selectedBg: 'rgba(0, 229, 255, 0.14)',
+      border: '#1E293B',
+      borderLight: '#334155',
+      cardBorder: '#334155',
+      buttonBorder: '#475569',
+      iconContainerBg: '#1E293B',
+      iconContainerBorder: '#334155',
+      selectedBorder: '#2563EB',
+      selectedBg: 'rgba(37, 99, 235, 0.12)',
 
-      primary: '#00E5FF',
-      primaryDark: '#00B4D8',
-      primaryLight: '#E0F7FA',
-      primaryGlow: 'rgba(0, 229, 255, 0.15)',
+      primary: '#2563EB',
+      primaryDark: '#1D4ED8',
+      primaryLight: '#DBEAFE',
+      primaryGlow: 'transparent',
 
-      accentRed: '#FF3366',
-      accentCyan: '#00E5FF',
+      accentRed: '#EF4444',
+      accentCyan: '#0284C7',
       accentBlue: '#3B82F6',
 
       success: '#10B981',
       warning: '#F59E0B',
       danger: '#EF4444',
-      info: '#06B6D4',
+      info: '#0284C7',
 
       text: '#F8FAFC',
-      textSecondary: '#CBD5E1',
-      textMuted: '#94A3B8',
-      textInverted: '#070C18',
+      textSecondary: '#94A3B8',
+      textMuted: '#64748B',
+      textInverted: '#0B1120',
 
-      cardBg: '#0D1426',
-      inputBg: '#090E1C',
-      badgeBg: 'rgba(0, 229, 255, 0.12)',
+      cardBg: '#111827',
+      inputBg: '#0B1120',
+      badgeBg: 'rgba(37, 99, 235, 0.10)',
     },
   },
 
   clinicalCrisp: {
     id: 'clinicalCrisp',
-    name: 'Clinical Crisp (Light Clinic)',
-    description: 'Clean, professional optometrist daytime clinic mode',
-    icon: 'medical-outline',
+    name: 'Clinical Light (Daytime Clinic)',
+    description: 'Clean optometrist daytime clinic mode',
+    icon: 'sunny-outline',
     isDark: false,
     statusBar: 'dark-content',
     colors: {
@@ -62,19 +62,19 @@ export const THEMES = {
       surfaceElevated: '#FFFFFF',
       surfaceHighlight: '#F1F5F9',
 
-      border: '#CBD5E1',
-      borderLight: '#E2E8F0',
-      cardBorder: '#CBD5E1',
-      buttonBorder: '#94A3B8',
+      border: '#E2E8F0',
+      borderLight: '#F1F5F9',
+      cardBorder: '#E2E8F0',
+      buttonBorder: '#CBD5E1',
       iconContainerBg: '#F1F5F9',
-      iconContainerBorder: '#CBD5E1',
+      iconContainerBorder: '#E2E8F0',
       selectedBorder: '#0284C7',
-      selectedBg: 'rgba(2, 132, 199, 0.10)',
+      selectedBg: 'rgba(2, 132, 199, 0.08)',
 
       primary: '#0284C7',
       primaryDark: '#0369A1',
       primaryLight: '#E0F2FE',
-      primaryGlow: 'rgba(2, 132, 199, 0.12)',
+      primaryGlow: 'transparent',
 
       accentRed: '#DC2626',
       accentCyan: '#0284C7',
@@ -86,109 +86,20 @@ export const THEMES = {
       info: '#0284C7',
 
       text: '#0F172A',
-      textSecondary: '#334155',
+      textSecondary: '#475569',
       textMuted: '#64748B',
       textInverted: '#FFFFFF',
 
       cardBg: '#FFFFFF',
       inputBg: '#F8FAFC',
-      badgeBg: 'rgba(2, 132, 199, 0.10)',
-    },
-  },
-
-  anaglyphDichoptic: {
-    id: 'anaglyphDichoptic',
-    name: 'Anaglyph 3D (Red & Cyan)',
-    description: 'Dichoptic vision suppression therapy with chromatic separation',
-    icon: 'glasses-outline',
-    isDark: true,
-    statusBar: 'light-content',
-    colors: {
-      background: '#09090F',
-      surface: '#13131F',
-      surfaceElevated: '#1A1A2B',
-      surfaceHighlight: '#24243A',
-
-      border: '#323250',
-      borderLight: '#44446C',
-      cardBorder: 'rgba(255, 255, 255, 0.16)',
-      buttonBorder: 'rgba(255, 255, 255, 0.24)',
-      iconContainerBg: '#1C1C2E',
-      iconContainerBorder: 'rgba(255, 255, 255, 0.18)',
-      selectedBorder: '#FF2A6D',
-      selectedBg: 'rgba(255, 42, 109, 0.14)',
-
-      primary: '#FF2A6D',
-      primaryDark: '#D90429',
-      primaryLight: '#FFE5EC',
-      primaryGlow: 'rgba(255, 42, 109, 0.2)',
-
-      accentRed: '#FF2A6D',
-      accentCyan: '#05D9E8',
-      accentBlue: '#005670',
-
-      success: '#00F5D4',
-      warning: '#FEE440',
-      danger: '#FF0054',
-      info: '#05D9E8',
-
-      text: '#FFFFFF',
-      textSecondary: '#D1D1E6',
-      textMuted: '#9E9EB8',
-      textInverted: '#09090F',
-
-      cardBg: '#13131F',
-      inputBg: '#0D0D16',
-      badgeBg: 'rgba(255, 42, 109, 0.15)',
-    },
-  },
-
-  emeraldComfort: {
-    id: 'emeraldComfort',
-    name: 'Emerald Wellness (Anti-Strain)',
-    description: 'Soft botanical green tones designed to reduce eye strain',
-    icon: 'leaf-outline',
-    isDark: true,
-    statusBar: 'light-content',
-    colors: {
-      background: '#05130E',
-      surface: '#0B2219',
-      surfaceElevated: '#113327',
-      surfaceHighlight: '#184435',
-
-      border: '#1E543F',
-      borderLight: '#2C7357',
-      cardBorder: 'rgba(255, 255, 255, 0.15)',
-      buttonBorder: 'rgba(255, 255, 255, 0.22)',
-      iconContainerBg: '#113327',
-      iconContainerBorder: 'rgba(255, 255, 255, 0.16)',
-      selectedBorder: '#10B981',
-      selectedBg: 'rgba(16, 185, 129, 0.15)',
-
-      primary: '#10B981',
-      primaryDark: '#059669',
-      primaryLight: '#D1FAE5',
-      primaryGlow: 'rgba(16, 185, 129, 0.18)',
-
-      accentRed: '#F43F5E',
-      accentCyan: '#2DD4BF',
-      accentBlue: '#38BDF8',
-
-      success: '#10B981',
-      warning: '#FBBF24',
-      danger: '#EF4444',
-      info: '#34D399',
-
-      text: '#ECFDF5',
-      textSecondary: '#A7F3D0',
-      textMuted: '#6EE7B7',
-      textInverted: '#05130E',
-
-      cardBg: '#0B2219',
-      inputBg: '#071812',
-      badgeBg: 'rgba(16, 185, 129, 0.16)',
+      badgeBg: 'rgba(2, 132, 199, 0.08)',
     },
   },
 };
 
-export const DEFAULT_THEME = 'cyberCyan';
+// Backwards-compatibility aliases for stored preferences
+THEMES.cyberCyan = THEMES.calmDark;
+THEMES.anaglyphDichoptic = THEMES.calmDark;
+THEMES.emeraldComfort = THEMES.calmDark;
+
+export const DEFAULT_THEME = 'calmDark';
