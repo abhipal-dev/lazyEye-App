@@ -7,6 +7,7 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
+    "test:offline": "node scripts/test-offline-queue.js",
     "lint": "eslint .",
     "postinstall": "node scripts/patch-modules.js"
   },
