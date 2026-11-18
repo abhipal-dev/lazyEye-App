@@ -13,6 +13,7 @@ import { api } from '../../services/api';
 import HeaderBar from '../../components/HeaderBar';
 import MetricCard from '../../components/MetricCard';
 import CustomIcon from '../../components/CustomIcon';
+import IrisAssistantModal from '../../components/IrisAssistantModal';
 
 export default function DoctorDashboardScreen({
   navigation,
@@ -28,6 +29,7 @@ export default function DoctorDashboardScreen({
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [showIris, setShowIris] = useState(false);
 
   const loadData = async () => {
     try {
@@ -126,6 +128,56 @@ export default function DoctorDashboardScreen({
             style={styles.metricItem}
           />
         </View>
+
+        {/* Iris Clinical AI Copilot Banner */}
+        <TouchableOpacity
+          onPress={() => setShowIris(true)}
+          activeOpacity={0.85}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: '#1E293B',
+            borderRadius: 14,
+            padding: 14,
+            marginBottom: 16,
+            borderWidth: 1,
+            borderColor: '#3B82F6',
+          }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <View
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 10,
+                backgroundColor: '#2563EB',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Text style={{ fontSize: 18 }}>👁️</Text>
+            </View>
+            <View>
+              <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '700' }}>
+                Iris Clinical AI Copilot
+              </Text>
+              <Text style={{ color: '#94A3B8', fontSize: 11 }}>
+                Ask about compliance, SOAP notes, & contrast
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              backgroundColor: '#2563EB',
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              borderRadius: 8,
+            }}
+          >
+            <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '700' }}>Ask Iris</Text>
+          </View>
+        </TouchableOpacity>
 
         {/* Section Heading */}
         <View style={styles.sectionHeaderRow}>
@@ -309,6 +361,12 @@ export default function DoctorDashboardScreen({
 
         <View style={{ height: 24 }} />
       </ScrollView>
+
+      <IrisAssistantModal
+        visible={showIris}
+        onClose={() => setShowIris(false)}
+        role="doctor"
+      />
     </View>
   );
 }
